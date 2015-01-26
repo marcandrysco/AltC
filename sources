@@ -1,0 +1,55 @@
+Package	"libaltc"
+Version	"0.1.0"
+
+Target
+	Name	"altc"
+	Type	"Library"
+
+	CFlags	""
+	LDFlags	""
+
+	If [ "$visibility" ]
+		CFlags	+"-fvisibility=internal"
+	EndIf
+
+	If [ "$host" = "windows" ]
+		CFlags	+"-D_WIN32_WINNT=0x0600"
+		LDFlags	+"-lws2_32"
+	Else
+		CFlags	+"-D_FILE_OFFSET_BITS=64"
+		LDFlags	+"-lpthread -lrt -lm -ldl"
+	EndIf
+
+	Extra	"src/common.h"
+	Extra	"src/defs.h"
+	Extra	"src/inc.h"
+	Source	"src/altc.c"
+	Source	"src/dtoa.c"
+	Source	"src/math.c"
+	Source	"src/mem.c"
+	Source	"src/res.c"
+	Source	"src/string.c"
+	Source	"src/try.c"
+
+	Extra	"src/posix/defs.h"
+	Extra	"src/posix/inc.h"
+	Source	"src/posix/file.c"
+	Source	"src/posix/poll.c"
+	Source	"src/posix/thread.c"
+	Source	"src/posix/time.c"
+	Source	"src/posix/trace.c"
+
+	Extra	"src/types/defs.h"
+	Extra	"src/types/inc.h"
+	Source	"src/types/avltree.c"
+	Source	"src/types/func.c"
+	Source	"src/types/list.c"
+
+	Extra	"src/io/defs.h"
+	Source	"src/io/chunk.c"
+	Source	"src/io/output.c"
+	Source	"src/io/print.c"
+	Source	"src/io/string.c"
+
+	Doc	"doc/mem.md"
+EndTarget

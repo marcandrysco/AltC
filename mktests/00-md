@@ -1,0 +1,24 @@
+#!/bin/sh
+
+##
+# Markdown Compiler Test
+#   Search for a markdown compiler installed on the system.
+# Variables
+#   md
+#     Set to the available markdown compiler.
+# Output
+#   MD
+#     Writes the available markdown compiler. If no compiler is available, the
+#     command is set to the no-op ':'.
+#.
+
+test "$md" && echo "markdown specified ($md)"
+
+if [ -z "$md" ] ; then
+	printf "checking for compiler (pandoc)... "
+	which "pandoc" > /dev/null && { echo yes ; md="pandoc --mathml -f markdown -t html" ; } || echo no
+fi
+
+test -z "$md" && { echo "warning: no markdown found" ; md=":" ; }
+
+echo "MD = $md" >> Makefile
