@@ -57,6 +57,14 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+/*
+ * trace definitions
+ */
+
+#if _debug
+#	define RES_NTRACE	8
+#endif
+
 
 /**
  * Variable argument list wrapper structure.
@@ -65,6 +73,26 @@
 
 struct arglist_t {
 	va_list args;
+};
+
+
+/**
+ * General node structure.
+ *   @prev, next: The previous and next general nodes.
+ *   @offset: The offset.
+ *   @destroy: The destruction callback.
+ *   @trace: The trace.
+ */
+
+struct _res_node_t {
+	struct _res_node_t *prev, *next;
+
+	ssize_t offset;
+	void (*destroy)(void *);
+
+#if _debug
+	void *trace[RES_NTRACE];
+#endif
 };
 
 #endif

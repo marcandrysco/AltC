@@ -7,5 +7,6 @@
 
 #include "func.h"
 #include "list.h"
+#include "strbuf.h"
 
 #endif

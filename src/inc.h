@@ -13,19 +13,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * trace definitions
- */
-
-#if _debug
-#	define RES_NTRACE	8
-#endif
-
 
 /**
  * Resource information structure.
  *   @up: The previous information structure.
  *   @fatal: The fatal flag.
+ *   @error: The error string.
  *   @jmpbuf: The jump buffer.
  *   @memcnt, nodecnt: The memory and node count.
  *   @nbytes: The number of bytes.
@@ -37,6 +30,7 @@ struct res_info_t {
 	struct res_info_t *up;
 
 	bool fatal;
+	char *error;
 	jmp_buf jmpbuf;
 
 #if _debug || _test
@@ -61,23 +55,6 @@ struct _res_mem_t {
 #if _debug || _test
 	size_t nbytes;
 #endif
-
-#if _debug
-	void *trace[RES_NTRACE];
-#endif
-};
-
-/**
- * General node structure.
- *   @prev, next: The previous and next general nodes.
- *   @destroy: The destruction callback.
- *   @trace: The trace.
- */
-
-struct _res_node_t {
-	struct _res_node_t *prev, *next;
-
-	void (*destroy)(struct _res_node_t *);
 
 #if _debug
 	void *trace[RES_NTRACE];

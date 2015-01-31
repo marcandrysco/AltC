@@ -1,5 +1,59 @@
 #include "../common.h"
 #include "thread.h"
+#include "../try.h"
+
+
+/**
+ * Create a new thread.
+ *   @func: The function.
+ *   @arg: The argument.
+ *   &returns: The thread.
+ */
+
+_thread_t _thread_new(void *(*func)(void *), void *arg)
+{
+	int err;
+	_thread_t thread;
+
+	err = pthread_create(&thread, NULL, func, arg);
+	if(err != 0)
+		throw("Failed to create thread. %s.", strerror(err));
+
+	return thread;
+}
+
+/**
+ * Detach a thread.
+ *   @thread: The thread.
+ */
+
+void _thread_detach(_thread_t thread)
+{
+	int err;
+
+	err = pthread_detach(thread);
+	if(err != 0)
+		throw("Failed to detach thread. %s.", strerror(err));
+}
+
+/**
+ * Join a thread.
+ *   @thread: The thread.
+ *   &returns: The return value.
+ */
+
+void *_thread_join(_thread_t thread)
+{
+	int err;
+	void *ptr;
+
+	err = pthread_join(thread, &ptr);
+	if(err != 0)
+		throw("Failed to join thread. %s.", strerror(err));
+
+	return ptr;
+}
+
 
 /**
  * Allocate a thread-specific variable.

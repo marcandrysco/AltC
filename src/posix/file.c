@@ -8,14 +8,29 @@
  *   @path: The path.
  *   @flags: The flags.
  *   @...: The optional permissions.
+ *   &returns: The file.
  */
 
 _export
 _file_t _open(const char *path, enum _file_e flags, ...)
 {
 	_file_t file;
+	int oflag;
 
-	file = open(path, O_RDONLY);
+	if(flags & io_read_e & io_write_e)
+		oflag = O_RDWR;
+	else if(flags & io_read_e)
+		oflag = O_RDONLY;
+	else
+		oflag = O_WRONLY;
+
+	if(flags & io_trunc_e)
+		oflag |= O_TRUNC;
+
+	if(flags & io_create_e)
+		oflag |= O_CREAT;
+
+	file = open(path, oflag, 0666);
 
 	return file;
 }

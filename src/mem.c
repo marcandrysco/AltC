@@ -23,6 +23,27 @@ void *mem_alloc(size_t nbytes)
 }
 
 /**
+ * Reallocate memory.
+ *   @ptr: The original pointer.
+ *   @nbytes: The number of bytes.
+ *   &returns: The new pointer.
+ */
+
+_export
+void *mem_realloc(void *ptr, size_t nbytes)
+{
+	struct _res_mem_t *mem;
+
+	mem = ptr -= sizeof(struct _res_mem_t);
+
+	_res_remove(mem);
+	mem = ptr = realloc(ptr, nbytes + sizeof(struct _res_mem_t));
+	_res_add(mem, nbytes);
+
+	return ptr + sizeof(struct _res_mem_t);
+}
+
+/**
  * Free memory.
  *   @ptr: The pointer.
  */

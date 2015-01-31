@@ -3,6 +3,7 @@
 #include "io/output.h"
 #include "io/print.h"
 #include "res.h"
+#include "string.h"
 
 
 /**
@@ -13,7 +14,11 @@
 _export
 jmp_buf *_tryjmp(void)
 {
-	return &res_info()->jmpbuf;
+	struct res_info_t *info = res_info();
+
+	info->fatal = false;
+
+	return &info->jmpbuf;
 }
 
 /**
@@ -48,9 +53,15 @@ _noreturn void _throw(const char *restrict file, unsigned long line, const char 
 	info = res_info();
 	if((info == NULL) || info->fatal)
 		_vfatal(file, line, format, args);
-	else
-		;
 
+	if(info->error != NULL)
+		free(info->error);
+
+	info->error = malloc(str_vlprintf(format, args) + 1);
+	va_end(args);
+
+	va_start(args, format);
+	str_vprintf(info->error, format, args);
 	va_end(args);
 
 	longjmp(info->jmpbuf, 1);
@@ -68,12 +79,18 @@ _export
 _noreturn void _vthrow(const char *restrict file, unsigned long line, const char *restrict format, va_list args)
 {
 	struct res_info_t *info;
+	va_list copy;
 
 	info = res_info();
 	if((info == NULL) || info->fatal)
 		_vfatal(file, line, format, args);
-	else
-		;
+
+	if(info->error != NULL)
+		free(info->error);
+
+	va_copy(copy, args);
+	info->error = malloc(str_vlprintf(format, args) + 1);
+	str_vprintf(info->error, format, copy);
 
 	longjmp(info->jmpbuf, 1);
 }

@@ -4,6 +4,7 @@
 
 /**
  * Input/output flags.
+ *   @io_none_e: No flags.
  *   @io_read_e: Read.
  *   @io_write_e: Write.
  *   @io_append_e: Append.
@@ -13,6 +14,7 @@
  */
 
 enum io_flag_e {
+	io_none_e = 0x00,
 	io_read_e = 0x01,
 	io_write_e = 0x02,
 	io_append_e = 0x04,

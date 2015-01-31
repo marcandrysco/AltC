@@ -32,4 +32,27 @@ static inline uint16_t m_max_uint16(uint16_t left, uint16_t right)
 	return (left > right) ? left : right;
 }
 
+
+/**
+ * Unsinged integer count the number of leading zeros.
+ *   @n: The number.
+ *   &returns: The number of leading zeros
+ */
+
+static inline int8_t m_uintclz(unsigned int n)
+{
+	return __builtin_clz(n);
+}
+
+/**
+ * Unsinged integer count the number of leading zeros.
+ *   @n: The number.
+ *   &returns: The number of leading zeros
+ */
+
+static inline int8_t m_uintctz(unsigned int n)
+{
+	return __builtin_ctz(n);
+}
+
 #endif

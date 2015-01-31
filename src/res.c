@@ -83,6 +83,20 @@ void res_check(void)
 #endif
 }
 
+/**
+ * Retrieve the current error.
+ *   &returns: The error or null.
+ */
+
+_export
+const char *res_error(void)
+{
+	struct res_info_t *info;
+
+	info = res_info();
+	return info ? info->error : NULL;
+}
+
 
 /**
  * Push a resource structure.
@@ -97,11 +111,14 @@ struct res_info_t *res_push(void)
 	info = malloc(sizeof(struct res_info_t));
 	info->fatal = false;
 	info->up = res_info();
+	info->error = NULL;
 	info->mhead = info->mtail = NULL;
 	info->nhead = info->ntail = NULL;
 
 #if _test || _debug
 	info->memcnt = 0;
+	info->nodecnt = 0;
+	info->nbytes = 0;
 #endif
 
 	_specific_set(specific, info);
@@ -122,7 +139,35 @@ void res_pop()
 	if(info == NULL)
 		fprintf(stderr, "No resource structure to pop.");
 
+	if(info->error != NULL)
+		free(info->error);
+
 	up = info->up;
+	if(up != NULL) { 
+		if(info->nhead != NULL) {
+			if(up->ntail != NULL)
+				up->ntail->next = info->nhead;
+
+			info->nhead->prev = up->ntail;
+			up->ntail = info->ntail;
+#if _test || _debug
+			up->nodecnt += info->nodecnt;
+#endif
+		}
+
+		if(info->mhead != NULL) {
+			if(up->mtail != NULL)
+				up->mtail->next = info->mhead;
+
+			info->mhead->prev = up->mtail;
+			up->mtail = info->mtail;
+#if _test || _debug
+			up->memcnt += info->memcnt;
+			up->nbytes += info->nbytes;
+#endif
+		}
+	}
+
 	free(info);
 
 	_specific_set(specific, up);
@@ -136,8 +181,8 @@ void res_pop()
 _export
 void res_clear()
 {
-	res_memclear();
 	res_nodeclear();
+	res_memclear();
 }
 
 /**
@@ -173,6 +218,19 @@ void res_memclear()
 _export
 void res_nodeclear()
 {
+	struct res_info_t *info;
+	struct _res_node_t *cur, *prev;
+
+	info = res_info();
+
+	cur = info->ntail;
+	while(cur != NULL) {
+		prev = cur->prev;
+		cur->destroy((void *)cur - cur->offset);
+		cur = prev;
+	}
+
+	info->nhead = info->ntail = NULL;
 }
 
 
@@ -212,7 +270,7 @@ void _res_add(struct _res_mem_t *mem, size_t nbytes)
 
 /**
  * Remove a memory resource.
- *   @mem: The meory resource.
+ *   @mem: The memory resource.
  */
 
 void _res_remove(struct _res_mem_t *mem)
@@ -234,4 +292,66 @@ void _res_remove(struct _res_mem_t *mem)
 		info->mhead = mem->next;
 	else
 		mem->prev->next = mem->next;
+}
+
+
+/**
+ * Add a resource node.
+ *   @node: The resource node.
+ *   @offset: The offset.
+ *   @destroy: The destruction callback.
+ */
+
+_export
+void res_add(struct _res_node_t *node, ssize_t offset, void (*destroy)(void *))
+{
+	struct res_info_t *info;
+
+	info = res_info();
+
+#if _test || _debug
+	info->nodecnt++;
+#endif
+
+#if _debug
+	//_backtrace(node->trace, RES_NTRACE);
+#endif
+
+	node->prev = info->ntail;
+	node->next = NULL;
+	node->offset = offset;
+	node->destroy = destroy;
+
+	if(info->ntail != NULL)
+		info->ntail->next = node;
+	else
+		info->nhead = node;
+
+	info->ntail = node;
+}
+
+/**
+ * Remove a resource node resource.
+ *   @node: The resource node.
+ */
+
+_export
+void res_remove(struct _res_node_t *node)
+{
+	struct res_info_t *info;
+
+	info = res_info();
+#if _test || _debug
+	info->nodecnt--;
+#endif
+
+	if(node->next == NULL)
+		info->ntail = node->prev;
+	else
+		node->next->prev = node->prev;
+
+	if(node->prev == NULL)
+		info->nhead = node->next;
+	else
+		node->prev->next = node->next;
 }

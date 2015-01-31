@@ -2,6 +2,14 @@
 #define POSIX_THREAD_H
 
 /*
+ * thread function declarations
+ */
+
+_thread_t _thread_new(void *(*func)(void *), void *arg);
+void _thread_detach(_thread_t thread);
+void *_thread_join(_thread_t thread);
+
+/*
  * thread-local function declarations
  */
 

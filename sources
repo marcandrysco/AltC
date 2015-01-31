@@ -24,7 +24,10 @@ Target
 	Extra	"src/defs.h"
 	Extra	"src/inc.h"
 	Source	"src/altc.c"
+	Source	"src/cfg.c"
 	Source	"src/dtoa.c"
+	Source	"src/dynlib.c"
+	Source	"src/fs.c"
 	Source	"src/math.c"
 	Source	"src/mem.c"
 	Source	"src/res.c"
@@ -33,7 +36,11 @@ Target
 
 	Extra	"src/posix/defs.h"
 	Extra	"src/posix/inc.h"
+	Source	"src/posix/dir.c"
+	Source	"src/posix/dynlib.c"
+	Source	"src/posix/err.c"
 	Source	"src/posix/file.c"
+	Source	"src/posix/fs.c"
 	Source	"src/posix/poll.c"
 	Source	"src/posix/thread.c"
 	Source	"src/posix/time.c"
@@ -44,12 +51,18 @@ Target
 	Source	"src/types/avltree.c"
 	Source	"src/types/func.c"
 	Source	"src/types/list.c"
+	Source	"src/types/strbuf.c"
 
 	Extra	"src/io/defs.h"
+	Extra	"src/io/inc.h"
 	Source	"src/io/chunk.c"
+	Source	"src/io/input.c"
 	Source	"src/io/output.c"
+	Source	"src/io/parse.c"
 	Source	"src/io/print.c"
 	Source	"src/io/string.c"
+
+	Source	"src/app/dir.c"
 
 	Doc	"doc/mem.md"
 EndTarget
