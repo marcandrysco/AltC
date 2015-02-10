@@ -33,6 +33,16 @@ int _trycond(int val)
 	return val;
 }
 
+/**
+ * Create a no throw condition so future throws cause fatal errors.
+ */
+
+_export
+void nothrow()
+{
+	res_info()->fatal = true;
+}
+
 
 /**
  * Throw an error, returning to the try branch.
@@ -48,15 +58,16 @@ _noreturn void _throw(const char *restrict file, unsigned long line, const char 
 	struct res_info_t *info;
 	va_list args;
 
-	va_start(args, format);
-
 	info = res_info();
-	if((info == NULL) || info->fatal)
+	if((info == NULL) || info->fatal) {
+		va_start(args, format);
 		_vfatal(file, line, format, args);
+	}
 
 	if(info->error != NULL)
 		free(info->error);
 
+	va_start(args, format);
 	info->error = malloc(str_vlprintf(format, args) + 1);
 	va_end(args);
 

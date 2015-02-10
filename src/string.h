@@ -6,10 +6,12 @@
  */
 
 size_t str_len(const char *str);
+char *str_chr(const char *str, char ch);
 char *str_rchr(const char *str, char ch);
 
 bool str_isequal(const char *left, const char *right);
 int str_cmp(const char *left, const char *right);
+bool str_chk(const char *left, const char *right);
 
 bool str_isdigit(char ch);
 bool str_isspace(char ch);
@@ -21,9 +23,11 @@ char *str_unquote(const char *str, char **endptr);
 
 void str_copy(char *restrict dest, const char *restrict src);
 char *str_dup(const char *str);
+char *str_clone(const char *str);
+void str_set(char **dest, char *src);
+void str_replace(char **dest, const char *src);
 
 void str_erase(char *str);
-void str_set(char **dest, char *src);
 
 /*
  * i/o function declarations

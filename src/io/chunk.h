@@ -10,6 +10,7 @@ struct io_chunk_t io_chunk_tab(intptr_t cnt);
 
 size_t io_chunk_proc_len(struct io_chunk_t chunk);
 void io_chunk_proc_str(struct io_chunk_t chunk, char *restrict str);
+char *io_chunk_proc_strdup(struct io_chunk_t chunk);
 
 
 /**

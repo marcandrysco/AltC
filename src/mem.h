@@ -8,6 +8,7 @@
 void *mem_alloc(size_t size);
 void *mem_realloc(void *ptr, size_t nbytes);
 void mem_free(void *ptr);
+void _mem_freelc(unsigned int nptrs, void **ptrs);
 void mem_erase(void *ptr);
 
 void mem_copy(char *restrict dest, const char *restrict src, size_t nbytes);
@@ -16,6 +17,8 @@ void mem_move(char *dest, const char *src, size_t nbytes);
 /*
  * convenience macros
  */
+
+#define mem_freelc(nptrs, ptrs) _mem_freelc(nptrs, (void **)ptrs)
 
 #define mem_getref(type, val) (&(union { type v; }){ .v = (val) })
 #define mem_dupval(type, val) mem_dup(&(union { type v; }){ .v = (val) }, sizeof(type))

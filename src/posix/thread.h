@@ -10,6 +10,16 @@ void _thread_detach(_thread_t thread);
 void *_thread_join(_thread_t thread);
 
 /*
+ * mutex function declarations
+ */
+
+_mutex_t _mutex_init();
+void _mutex_destroy(_mutex_t *mutex);
+
+void mutex_lock(_mutex_t *mutex);
+void mutex_unlock(_mutex_t *mutex);
+
+/*
  * thread-local function declarations
  */
 

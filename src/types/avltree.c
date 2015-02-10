@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "avltree.h"
+#include "../try.h"
 
 
 /*
@@ -31,7 +32,7 @@ static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t
 _export
 struct avltree_root_t avltree_root_init(compare_f compare)
 {
-	return (struct avltree_root_t){ NULL, compare };
+	return (struct avltree_root_t){ 0, NULL, compare };
 }
 
 /**
@@ -165,6 +166,7 @@ void avltree_root_insert(struct avltree_root_t *root, struct avltree_node_t *nod
 	struct avltree_node_t *stack[AVLTREE_MAX_HEIGHT];
 
 	if(root->node == NULL) {
+		root->count++;
 		root->node = node;
 		node->parent = NULL;
 
@@ -176,7 +178,7 @@ void avltree_root_insert(struct avltree_root_t *root, struct avltree_node_t *nod
 	for(i = 0; stack[i] != NULL && i < AVLTREE_MAX_HEIGHT; i++) {
 		cmp = root->compare(node->ref, stack[i]->ref);
 		if(cmp == 0)
-			abort();
+			throw("Node already exists.");
 
 		dir[i] = CMP2NODE(cmp);
 		stack[i+1] = stack[i]->child[dir[i]];
@@ -186,6 +188,7 @@ void avltree_root_insert(struct avltree_root_t *root, struct avltree_node_t *nod
 	stack[i]->child[dir[i]] = node;
 	stack[i]->balance += NODEDIR(dir[i]);
 	node->parent = stack[i];
+	root->count++;
 
 	if(stack[i]->child[OTHERNODE(dir[i])] != NULL)
 		return;
@@ -313,6 +316,7 @@ struct avltree_node_t *avltree_root_remove(struct avltree_root_t *root, const vo
 	}
 
 	*retval = avltree_node_init(retval->ref);
+	root->count--;
 
 	return retval;
 }

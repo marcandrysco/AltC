@@ -18,6 +18,13 @@ struct dynlib_t {
 };
 
 
+/*
+ * local function declarations
+ */
+
+static void dynlib_release(struct dynlib_t *lib);
+
+
 /**
  * Open a dynamic library.
  *   @name: The library name.
@@ -36,7 +43,7 @@ struct dynlib_t *dynlib_open(const char *name)
 
 	lib = mem_alloc(sizeof(struct dynlib_t));
 	lib->ref = ref;
-	res_add(&lib->node, offsetof(struct dynlib_t, node), (delete_f)dynlib_close);
+	res_add(&lib->node, offsetof(struct dynlib_t, node), (delete_f)dynlib_release);
 
 	return lib;
 }
@@ -52,6 +59,16 @@ void dynlib_close(struct dynlib_t *lib)
 	res_remove(&lib->node);
 	_dlclose(lib->ref);
 	mem_free(lib);
+}
+
+/**
+ * Release a dynamic library reference.
+ *   @lib: The library.
+ */
+
+static void dynlib_release(struct dynlib_t *lib)
+{
+	_dlclose(lib->ref);
 }
 
 

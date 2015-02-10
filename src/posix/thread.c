@@ -56,6 +56,67 @@ void *_thread_join(_thread_t thread)
 
 
 /**
+ * Initialize a mutex.
+ *   &returns: The mutex.
+ */
+
+_mutex_t _mutex_init()
+{
+	int err;
+	_mutex_t mutex;
+
+	err = pthread_mutex_init(&mutex, NULL);
+	if(err != 0)
+		throw("Failed create mutex. %s.", strerror(err));
+
+	return mutex;
+}
+
+/**
+ * Destroy a mutex.
+ *   @mutex: The mutex.
+ */
+
+void _mutex_destroy(_mutex_t *mutex)
+{
+	int err;
+
+	err = pthread_mutex_destroy(mutex);
+	if(err != 0)
+		throw("Failed create mutex. %s.", strerror(err));
+}
+
+
+/**
+ * Failed to lock mutex.
+ *   @mutex: The mutex.
+ */
+
+void mutex_lock(_mutex_t *mutex)
+{
+	int err;
+
+	err = pthread_mutex_lock(mutex);
+	if(err != 0)
+		throw("Failed lock mutex. %s.", strerror(err));
+}
+
+/**
+ * Failed to unlock mutex.
+ *   @mutex: The mutex.
+ */
+
+void mutex_unlock(_mutex_t *mutex)
+{
+	int err;
+
+	err = pthread_mutex_unlock(mutex);
+	if(err != 0)
+		throw("Failed lock mutex. %s.", strerror(err));
+}
+
+
+/**
  * Allocate a thread-specific variable.
  *   @destroy: Optional. The destruction callback.
  *   &returns: The thread-specific key.

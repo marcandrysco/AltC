@@ -15,6 +15,7 @@ HEADERS = \
 	src/posix/trace.h \
 	\
 	src/altc.h \
+	src/argv.h \
 	src/cfg.h \
 	src/dtoa.h \
 	src/dynlib.h \

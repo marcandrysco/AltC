@@ -19,6 +19,19 @@ void io_output_full(struct io_output_t output, const void *restrict buf, size_t 
 
 
 /**
+ * Control an output.
+ *   @output: The output.
+ *   @id: The control identifier.
+ *   @data: The control data.
+ *   &returns: True if the signal is handle, false otherwise.
+ */
+
+static inline bool io_output_ctrl(struct io_output_t output, unsigned int cmd, void *data)
+{
+	return output.iface->device.ctrl(output.ref, cmd, data);
+}
+
+/**
  * Close an output.
  *   @outptut: The output.
  */

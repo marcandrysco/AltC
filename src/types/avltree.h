@@ -10,11 +10,13 @@
 
 /**
  * AVL tree root structure.
+ *   @count: The number of nodes.
  *   @node: The root node.
  *   @compare: The comparison callback.
  */
 
 struct avltree_root_t {
+	unsigned int count;
 	struct avltree_node_t *node;
 
 	compare_f compare;

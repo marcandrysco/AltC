@@ -20,8 +20,6 @@
  *   @fatal: The fatal flag.
  *   @error: The error string.
  *   @jmpbuf: The jump buffer.
- *   @memcnt, nodecnt: The memory and node count.
- *   @nbytes: The number of bytes.
  *   @mhead, mtail: Memory resource head and tail nodes.
  *   @nhead, ntail: General resource head and tail nodes.
  */
@@ -32,11 +30,6 @@ struct res_info_t {
 	bool fatal;
 	char *error;
 	jmp_buf jmpbuf;
-
-#if _debug || _test
-	unsigned long memcnt, nodecnt;
-	size_t nbytes;
-#endif
 
 	struct _res_mem_t *mhead, *mtail;
 	struct _res_node_t *nhead, *ntail;

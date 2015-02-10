@@ -6,6 +6,13 @@
 #include "io/inc.h"
 
 
+/*
+ * local function declarations
+ */
+
+static struct cfg_line_t *buf_line(struct cfg_reader_t *reader);
+
+
 /**
  * Create a new configuration writer.
  *   @output: The output.
@@ -24,6 +31,18 @@ struct cfg_writer_t cfg_writer_init(struct io_output_t output)
 }
 
 /**
+ * Open a configuration writer. 
+ *   @path: The path.
+ *   &returns: The writer.
+ */
+
+_export
+struct cfg_writer_t cfg_writer_open(const char *path)
+{
+	return cfg_writer_init(io_output_open(path, io_none_e));
+}
+
+/**
  * Delete a configuration writer.
  *   @writer: The writer.
  */
@@ -35,6 +54,50 @@ void cfg_writer_destroy(struct cfg_writer_t *writer)
 		throw("Attempting to finish writing within a tab.");
 }
 
+/**
+ * Close a writer.
+ *   @writer: The writer.
+ */
+
+_export
+void cfg_writer_close(struct cfg_writer_t *writer)
+{
+	cfg_writer_destroy(writer);
+	io_output_close(writer->output);
+}
+
+
+/**
+ * Write a formatted line to the writer.
+ *   @writer: The writer.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ */
+
+_export
+void cfg_writef(struct cfg_writer_t *writer, const char *key, const char *format, ...)
+{
+	va_list args;
+	char space = '\t';
+
+	va_start(args, format);
+	io_printf(writer->output, "%C%s", io_chunk_tab(writer->tab), key);
+
+	while(*format != '\0') {
+		io_printf(writer->output, "%c", space);
+		space = ' ';
+
+		switch(*format++) {
+		case 'u': io_printf(writer->output, "\"%u\"", va_arg(args, unsigned int)); break;
+		case 's': io_printf(writer->output, "\"%s\"", va_arg(args, const char *)); break;
+		default: throw("Invalid format character '%c'.", format[-1]);
+		}
+	}
+
+	io_printf(writer->output, "\n");
+	va_end(args);
+}
 
 /**
  * Write a string to the writer.
@@ -51,7 +114,10 @@ void cfg_write_str(struct cfg_writer_t *writer, const char *key, const char *str
 
 /**
  * Write a 2-piece version to the writer.
- *   @write: The writer.
+ *   @writer: The writer.
+ *   @key: The key.
+ *   @maj: The major component.
+ *   @min: The minor component.
  */
 
 _export
@@ -70,7 +136,28 @@ void cfg_write_ver2(struct cfg_writer_t *writer, const char *key, unsigned int m
 _export
 struct cfg_reader_t cfg_reader_init(struct io_input_t input)
 {
-	return (struct cfg_reader_t){ input, 0, 0l };
+	struct cfg_reader_t reader;
+
+	reader.input = input;
+	reader.depth = 0;
+	reader.line = 0l;
+	reader.buf = buf_line(&reader);
+
+	return reader;
+}
+
+/**
+ * Open a configuration reader.
+ *   @path: The path.
+ *   &returns: The reader.
+ */
+
+_export
+struct cfg_reader_t cfg_reader_open(const char *path)
+{
+	struct io_input_t input = io_input_open(path, io_none_e);
+
+	return cfg_reader_init(input);
 }
 
 /**
@@ -81,22 +168,210 @@ struct cfg_reader_t cfg_reader_init(struct io_input_t input)
 _export
 void cfg_reader_destroy(struct cfg_reader_t *reader)
 {
+	if(reader->buf != NULL)
+		cfg_line_delete(reader->buf);
+}
+
+/**
+ * Close a configuration reader.
+ *   @reader: The reader.
+ */
+
+_export
+void cfg_reader_close(struct cfg_reader_t *reader)
+{
+	cfg_reader_destroy(reader);
+	io_input_close(reader->input);
 }
 
 
 /**
+ * Peak at the next key in a reader.
+ *   @reader: The reader.
+ *   &returns: The key or null.
+ */
+
+_export
+const char *cfg_reader_peak(struct cfg_reader_t *reader)
+{
+	return reader->buf ? reader->buf->key : NULL;
+}
+
+/**
+ * Check if the current line matches the key.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   &returns: The line if the key matches, null otherwise.
+ */
+
+_export
+struct cfg_line_t *cfg_reader_check(struct cfg_reader_t *reader, const char *key)
+{
+	return str_chk(cfg_reader_peak(reader), key) ? reader->buf : NULL;
+}
+
+/**
+ * Get the next line only if it matches the key. The next line will be
+ * buffered given a match. The returned line must be deleted.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   &returns: The line if the key matches, null otherwise.
+ */
+
+_export
+struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key)
+{
+	struct cfg_line_t *line;
+
+	if(!str_chk(cfg_reader_peak(reader), key))
+		return NULL;
+
+	line = reader->buf;
+	reader->buf = buf_line(reader);
+
+	return line;
+}
+
+
+/**
+ * Read a formatted line from the reader.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ *   &returns: True if line read, false otherwise.
+ */
+
+_export
+bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...)
+{
+	va_list args;
+	struct cfg_line_t *line;
+	unsigned int i = 0;
+
+	line = cfg_reader_get(reader, key);
+	if(line == NULL)
+		return false;
+
+	va_start(args, format);
+
+	while(*format != '\0') {
+		switch(*format++) {
+		case 's': *va_arg(args, char **) = str_dup(line->value[i++]); break;
+		case 'u': *va_arg(args, unsigned int *) = str_parse_uint(line->value[i++]); break;
+		default: throw("Invalid format character '%c'.", format[-1]);
+		}
+	}
+
+	va_end(args);
+
+	cfg_line_delete(line);
+
+	return true;
+}
+
+/**
  * Read a line from the reader.
  *   @reader: The reader.
+ *   &returns: The line.
  */
 
 _export
 struct cfg_line_t *cfg_read_line(struct cfg_reader_t *reader)
 {
+	struct cfg_line_t *line;
+
+	line = reader->buf;
+	reader->buf = buf_line(reader);
+
+	return line;
+}
+
+/**
+ * Reader a two-part version from the reader.
+ *   @reader: The reader.
+ *   @key: The key to match.
+ *   @maj: The major component.
+ *   @min: The minor component.
+ */
+
+_export
+void cfg_read_ver2(struct cfg_reader_t *reader, const char *key, unsigned int *maj, unsigned int *min)
+{
+	struct cfg_line_t *line;
+
+	line = cfg_read_line(reader);
+	if(line == NULL)
+		throw("Missing version '%s'.", key);
+
+	if(line->nvalues != 1)
+		throw("Invalid version. Must have one argument.");
+
+	str_parsef(line->value[0], "%u.%u%$", maj, min);
+
+	cfg_line_delete(line);
+}
+
+/**
+ * Read a single string from the reader. The returned string must be freed.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   &returns: The string or null.
+ */
+
+_export
+char *cfg_read_str(struct cfg_reader_t *reader, const char *key)
+{
+	char *value;
+	struct cfg_line_t *line;
+
+	line = cfg_reader_get(reader, key);
+	if(line == NULL)
+		return NULL;
+
+	if(line->nvalues != 1)
+		throw("Too many values for '%s' directive.", key);
+
+	value = line->value[0];
+	line->nvalues = 0;
+	cfg_line_delete(line);
+
+	return value;
+}
+
+
+/**
+ * Delete a line.
+ *   @line: The line.
+ */
+
+_export
+void cfg_line_delete(struct cfg_line_t *line)
+{
+	unsigned int i;
+
+	for(i = 0; i < line->nvalues; i++)
+		mem_free(line->value[i]);
+
+	mem_free(line->key);
+	mem_free(line);
+}
+
+
+/**
+ * Read a line from the reader input.
+ *   @reader: The reader.
+ *   &returns: The line.
+ */
+
+static struct cfg_line_t *buf_line(struct cfg_reader_t *reader)
+{
 	char *str = NULL, *ptr, *value;
 	struct cfg_line_t *line;
 
 	do {
-		str_set(&str, io_input_line(reader->input));
+		char *ln = io_input_line(reader->input);
+		str_set(&str, ln);
 		if(str == NULL)
 			return NULL;
 
@@ -119,41 +394,4 @@ struct cfg_line_t *cfg_read_line(struct cfg_reader_t *reader)
 	mem_free(str);
 
 	return line;
-}
-
-_export
-void cfg_read_ver2(struct cfg_reader_t *reader, const char *key, unsigned int *maj, unsigned int *min)
-{
-	struct cfg_line_t *line;
-
-	line = cfg_read_line(reader);
-	if(line == NULL)
-		throw("Missing version '%s'.", key);
-
-	if(line->nvalues != 1)
-		throw("Invalid version. Must have one argument.");
-
-	str_parsef(line->value[0], "%u.%u%$", maj, min);
-
-	cfg_line_delete(line);
-}
-//_export
-//void cfg_read_ver2(
-
-
-/**
- * Delete a line.
- *   @line: The line.
- */
-
-_export
-void cfg_line_delete(struct cfg_line_t *line)
-{
-	unsigned int i;
-
-	for(i = 0; i < line->nvalues; i++)
-		mem_free(line->value[i]);
-
-	mem_free(line->key);
-	mem_free(line);
 }

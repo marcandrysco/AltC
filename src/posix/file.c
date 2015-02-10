@@ -1,6 +1,7 @@
 #include "../common.h"
 #include "file.h"
 #include <fcntl.h>
+#include "../try.h"
 
 
 /**
@@ -10,7 +11,6 @@
  *   @...: The optional permissions.
  *   &returns: The file.
  */
-
 _export
 _file_t _open(const char *path, enum _file_e flags, ...)
 {
@@ -31,6 +31,8 @@ _file_t _open(const char *path, enum _file_e flags, ...)
 		oflag |= O_CREAT;
 
 	file = open(path, oflag, 0666);
+	if(file < 0)
+		throw("Failed to open '%s'. %s.", path, strerror(errno));
 
 	return file;
 }
@@ -56,9 +58,15 @@ void _close(_file_t file)
  */
 
 _export
-ssize_t _read(_file_t file, void *buf, size_t nbytes)
+size_t _read(_file_t file, void *buf, size_t nbytes)
 {
-	return read(file, buf, nbytes);
+	ssize_t rd;
+
+	rd = read(file, buf, nbytes);
+	if(rd < 0)
+		throw("Failed to read from file. %s.", strerror(errno));
+
+	return rd;
 }
 
 /**
@@ -70,7 +78,13 @@ ssize_t _read(_file_t file, void *buf, size_t nbytes)
  */
 
 _export
-ssize_t _write(_file_t file, const void *buf, size_t nbytes)
+size_t _write(_file_t file, const void *buf, size_t nbytes)
 {
-	return write(file, buf, nbytes);
+	ssize_t wr;
+	
+	wr = write(file, buf, nbytes);
+	if(wr < 0)
+		throw("Failed to write to file. %s.", strerror(errno));
+
+	return wr;
 }

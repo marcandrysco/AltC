@@ -25,8 +25,8 @@ enum _file_e {
 _file_t _open(const char *path, enum _file_e flags, ...);
 void _close(_file_t file);
 
-ssize_t _read(_file_t file, void *buf, size_t nbytes);
-ssize_t _write(_file_t file, const void *buf, size_t nbytes);
+size_t _read(_file_t file, void *buf, size_t nbytes);
+size_t _write(_file_t file, const void *buf, size_t nbytes);
 
 /*
  * standard stream file definitions

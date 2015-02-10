@@ -21,6 +21,42 @@ double m_rand_nextd(struct m_rand_t *rand);
 
 
 /**
+ * Calculate minimum of two integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The minimum.
+ */
+
+static inline int m_min_int(int left, int right)
+{
+	return (left < right) ? left : right;
+}
+
+/**
+ * Calculate maximum of two integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The maximum.
+ */
+
+static inline int m_max_int(int left, int right)
+{
+	return (left > right) ? left : right;
+}
+
+/**
+ * Calculate maximum of two unsigned integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The maximum.
+ */
+
+static inline unsigned int m_max_uint(unsigned int left, unsigned int right)
+{
+	return (left > right) ? left : right;
+}
+
+/**
  * Calculate maximum of two unsigned 16-bit integers.
  *   @left: The left number.
  *   @right: The right number.

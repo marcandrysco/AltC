@@ -60,6 +60,19 @@ void mem_free(void *ptr)
 }
 
 /**
+ * Free a counted listed of pointers.
+ *   @nptrs: The number of pointers.
+ *   @ptrs: The pointers array.
+ */
+
+_export
+void _mem_freelc(unsigned int nptrs, void **ptrs)
+{
+	while(nptrs--)
+		mem_free(*ptrs++);
+}
+
+/**
  * Free memory if it is not null.
  *   @ptr: The pointer.
  */

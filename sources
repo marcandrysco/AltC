@@ -24,6 +24,7 @@ Target
 	Extra	"src/defs.h"
 	Extra	"src/inc.h"
 	Source	"src/altc.c"
+	Source	"src/argv.c"
 	Source	"src/cfg.c"
 	Source	"src/dtoa.c"
 	Source	"src/dynlib.c"

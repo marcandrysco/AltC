@@ -18,6 +18,9 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 static bool str_ctrl(void *ref, unsigned int cmd, void *data);
 static size_t str_write(void *ref, const void *restrict buf, size_t nbytes);
 
+static bool strdup_ctrl(void *ref, unsigned int cmd, void *data);
+static size_t strdup_write(void *ref, const void *restrict buf, size_t nbytes);
+
 
 /**
  * Create a string chunk.
@@ -159,4 +162,53 @@ static size_t str_write(void *ref, const void *restrict buf, size_t nbytes)
 	*str += nbytes;
 
 	return nbytes;
+}
+
+
+/**
+ * Process a chunk, creating an allocated string.
+ *   @chunk: The chunk.
+ *   &returns: The sring.
+ */
+
+_export
+char *io_chunk_proc_strdup(struct io_chunk_t chunk)
+{
+	struct strbuf_t buf;
+	static struct io_output_i iface = { { (io_ctrl_f)strdup_ctrl, delete_noop}, (io_write_f)strdup_write };
+
+	buf = strbuf_init(32);
+	io_chunk_proc(chunk, (struct io_output_t){ (void *)&buf, &iface });
+	return strbuf_done(&buf);
+}
+
+/**
+ * Handle a control for the string duplication.
+ *   @len: The length.
+ *   @cmd: The command.
+ *   @data: The data.
+ *   &returns: True if handled, false otherwise.
+ */
+
+static bool strdup_ctrl(void *ref, unsigned int cmd, void *data)
+{
+	return false;
+}
+
+/**
+ * Write callback for the string duplication.
+ *   @len: The length reference.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ *   &returns: The number of bytes to written.
+ */
+
+static size_t strdup_write(void *ref, const void *restrict buf, size_t nbytes)
+{
+	size_t written = nbytes;
+
+	for(nbytes--; nbytes != SIZE_MAX; nbytes--, buf++)
+		strbuf_store(ref, *(const char *)buf);
+
+	return written;
 }

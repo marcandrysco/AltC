@@ -8,6 +8,7 @@
 
 jmp_buf *_tryjmp(void);
 int _trycond(int val);
+void nothrow();
 
 /*
  * exception function declarations

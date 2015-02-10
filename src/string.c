@@ -39,6 +39,18 @@ size_t str_len(const char *str)
 }
 
 /**
+ * Search for a character.
+ *   @ch: The character.
+ *   &returns: A pointer to the character if found, false otherwise.
+ */
+
+_export
+char *str_chr(const char *str, char ch)
+{
+	return strchr(str, ch);
+}
+
+/**
  * Reverse search for a character.
  *   @ch: The character.
  *   &returns: A pointer to the character if found, false otherwise.
@@ -75,6 +87,24 @@ _export
 int str_cmp(const char *left, const char *right)
 {
 	return strcmp(left, right);
+}
+
+/**
+ * Check two string for equality, taking into account null values.
+ *   @left: The left string.
+ *   @right: The right string.
+ *   &returns: True if equal, false otherwise.
+ */
+
+_export
+bool str_chk(const char *left, const char *right)
+{
+	if(left == right)
+		return true;
+	else if((left == NULL) || (right == NULL))
+		return false;
+	return
+		str_isequal(left, right);
 }
 
 
@@ -200,6 +230,44 @@ char *str_dup(const char *str)
 	return dup;
 }
 
+/**
+ * Clone an input string, supporting nulls.
+ *   @str: The string, may be null.
+ *   &returns: A duplicate copy or null.
+ */
+
+_export
+char *str_clone(const char *str)
+{
+	return str ? str_dup(str) : NULL;
+}
+
+/**
+ * Set a string.
+ *   @dest: The destination pointer.
+ *   @src: Optional. Consumed. The source string.
+ */
+
+_export
+void str_set(char **dest, char *src)
+{
+	str_erase(*dest);
+	*dest = src;
+}
+
+/**
+ * Replace the string in destination with source. Either string may be null.
+ *   @dest: The destination.
+ *   @src: The source.
+ */
+
+_export
+void str_replace(char **dest, const char *src)
+{
+	mem_erase(*dest);
+	*dest = str_clone(src);
+}
+
 
 /**
  * Erase a string if not null. 
@@ -210,18 +278,6 @@ void str_erase(char *str)
 {
 	if(str != NULL)
 		mem_free(str);
-}
-
-/**
- * Set a string.
- *   @dest: The destination pointer.
- *   @src: Optional. Consumed. The source string.
- */
-
-void str_set(char **dest, char *src)
-{
-	str_erase(*dest);
-	*dest = src;
 }
 
 
@@ -412,7 +468,7 @@ char *str_vaprintf(const char *restrict format, va_list args)
 	str = mem_alloc(str_vlprintf(format, copy) + 1);
 	va_end(copy);
 
-	str_printf(str, format, args);
+	str_vprintf(str, format, args);
 
 	return str;
 }
