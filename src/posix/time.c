@@ -64,3 +64,36 @@ void _usleep(uint64_t usec)
 		req = rem;
 	}
 }
+
+
+/**
+ * Retrieve the current realtime clock time.
+ *   &returns: The time in nanoseconds.
+ */
+
+_export
+int64_t _clock_realtime()
+{
+	struct timespec ts;
+
+	if(clock_gettime(CLOCK_REALTIME, &ts) < 0)
+		throw("Failed to get current time. %s.", strerror(errno));
+
+	return 1000000000 * (int64_t)ts.tv_sec + (int64_t)ts.tv_nsec;
+}
+
+/**
+ * Retrieve the current monotonic clock time.
+ *   &returns: The time in nanoseconds.
+ */
+
+_export
+int64_t _clock_monotonic()
+{
+	struct timespec ts;
+
+	if(clock_gettime(CLOCK_MONOTONIC, &ts) < 0)
+		throw("Failed to get current time. %s.", strerror(errno));
+
+	return 1000000000 * (int64_t)ts.tv_sec + (int64_t)ts.tv_nsec;
+}

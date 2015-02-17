@@ -11,4 +11,7 @@ int64_t _utime(void);
 void _sleep(uint64_t sec);
 void _usleep(uint64_t usec);
 
+int64_t _clock_realtime();
+int64_t _clock_monotonic();
+
 #endif
