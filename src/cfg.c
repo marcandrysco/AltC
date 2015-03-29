@@ -68,6 +68,33 @@ void cfg_writer_close(struct cfg_writer_t *writer)
 
 
 /**
+ * Write a begin key.
+ *   @writer: The writer.
+ *   @key: The key.
+ */
+
+_export
+void cfg_begin(struct cfg_writer_t *writer, const char *key)
+{
+	io_printf(writer->output, "%C%s\n", io_chunk_tab(writer->tab), key);
+	writer->tab++;
+}
+
+/**
+ * Write an end key.
+ *   @writer: The writer.
+ *   @key: The key.
+ */
+
+_export
+void cfg_end(struct cfg_writer_t *writer, const char *key)
+{
+	writer->tab--;
+	io_printf(writer->output, "%C%s\n", io_chunk_tab(writer->tab), key);
+}
+
+
+/**
  * Write a formatted line to the writer.
  *   @writer: The writer.
  *   @key: The key.
@@ -232,6 +259,27 @@ struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key)
 	return line;
 }
 
+
+/**
+ * Read a blank line from the reader.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   &returns: True if line read, false otherwise.
+ */
+
+_export
+bool cfg_read(struct cfg_reader_t *reader, const char *restrict key)
+{
+	struct cfg_line_t *line;
+
+	line = cfg_reader_get(reader, key);
+	if(line == NULL)
+		return false;
+
+	cfg_line_delete(line);
+
+	return true;
+}
 
 /**
  * Read a formatted line from the reader.

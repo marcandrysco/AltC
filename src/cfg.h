@@ -53,6 +53,10 @@ struct cfg_writer_t cfg_writer_open(const char *path);
 void cfg_writer_destroy(struct cfg_writer_t *writer);
 void cfg_writer_close(struct cfg_writer_t *writer);
 
+void cfg_begin(struct cfg_writer_t *writer, const char *key);
+void cfg_end(struct cfg_writer_t *writer, const char *key);
+
+void cfg_write(struct cfg_writer_t *writer, const char *key);
 void cfg_writef(struct cfg_writer_t *writer, const char *key, const char *format, ...);
 void cfg_write_str(struct cfg_writer_t *writer, const char *key, const char *str);
 void cfg_write_ver2(struct cfg_writer_t *writer, const char *key, unsigned int maj, unsigned int min);
@@ -70,6 +74,7 @@ const char *cfg_reader_peak(struct cfg_reader_t *reader);
 struct cfg_line_t *cfg_reader_check(struct cfg_reader_t *reader, const char *key);
 struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key);
 
+bool cfg_read(struct cfg_reader_t *reader, const char *restrict key);
 bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...);
 struct cfg_line_t *cfg_read_line(struct cfg_reader_t *reader);
 void cfg_read_ver2(struct cfg_reader_t *reader, const char *key, unsigned int *maj, unsigned int *min);
