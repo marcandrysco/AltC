@@ -2,6 +2,13 @@
 #define TYPES_DEFS_H
 
 /**
+ * Create callback.
+ *   &returns: The pointer.
+ */
+
+typedef void *(*new_f)();
+
+/**
  * Delete callback.
  *   @ptr: The pointer.
  */

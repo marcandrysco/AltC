@@ -4,6 +4,17 @@
 
 
 /**
+ * Always null new function.
+ *   &returns: Always null.
+ */
+
+_export
+void *new_null()
+{
+	return NULL;
+}
+
+/**
  * No-operation deletion.
  *   @ref: The reference.
  */
