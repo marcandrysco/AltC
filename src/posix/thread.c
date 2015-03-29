@@ -10,6 +10,7 @@
  *   &returns: The thread.
  */
 
+_export
 _thread_t _thread_new(void *(*func)(void *), void *arg)
 {
 	int err;
@@ -27,6 +28,7 @@ _thread_t _thread_new(void *(*func)(void *), void *arg)
  *   @thread: The thread.
  */
 
+_export
 void _thread_detach(_thread_t thread)
 {
 	int err;
@@ -42,6 +44,7 @@ void _thread_detach(_thread_t thread)
  *   &returns: The return value.
  */
 
+_export
 void *_thread_join(_thread_t thread)
 {
 	int err;
@@ -60,6 +63,7 @@ void *_thread_join(_thread_t thread)
  *   &returns: The mutex.
  */
 
+_export
 _mutex_t _mutex_init()
 {
 	int err;
@@ -77,6 +81,7 @@ _mutex_t _mutex_init()
  *   @mutex: The mutex.
  */
 
+_export
 void _mutex_destroy(_mutex_t *mutex)
 {
 	int err;
@@ -92,7 +97,8 @@ void _mutex_destroy(_mutex_t *mutex)
  *   @mutex: The mutex.
  */
 
-void mutex_lock(_mutex_t *mutex)
+_export
+void _mutex_lock(_mutex_t *mutex)
 {
 	int err;
 
@@ -102,11 +108,32 @@ void mutex_lock(_mutex_t *mutex)
 }
 
 /**
+ * Failed to lock mutex.
+ *   @mutex: The mutex.
+ *   &returns: True if locked held, false otherwise.
+ */
+
+_export
+bool _mutex_trylock(_mutex_t *mutex)
+{
+	int err;
+
+	err = pthread_mutex_trylock(mutex);
+	if(err == EBUSY)
+		return false;
+	else if(err != 0)
+		throw("Failed lock mutex. %s.", strerror(err));
+
+	return true;
+}
+
+/**
  * Failed to unlock mutex.
  *   @mutex: The mutex.
  */
 
-void mutex_unlock(_mutex_t *mutex)
+_export
+void _mutex_unlock(_mutex_t *mutex)
 {
 	int err;
 
@@ -122,6 +149,7 @@ void mutex_unlock(_mutex_t *mutex)
  *   &returns: The thread-specific key.
  */
 
+_export
 _specific_t _specific_alloc(void (*destroy)(void *))
 {
 	_specific_t specific;
@@ -137,6 +165,7 @@ _specific_t _specific_alloc(void (*destroy)(void *))
  *   @specific: The thread-specific key.
  */
 
+_export
 void _specific_free(_specific_t specific)
 {
 	if(pthread_key_delete(specific) != 0)
@@ -150,6 +179,7 @@ void _specific_free(_specific_t specific)
  *   &returns: The variable pointer.
  */
 
+_export
 void *_specific_get(_specific_t specific)
 {
 	return pthread_getspecific(specific);
@@ -161,6 +191,7 @@ void *_specific_get(_specific_t specific)
  *   @ptr: The variable pointer.
  */
 
+_export
 void _specific_set(_specific_t specific, void *ptr)
 {
 	if(pthread_setspecific(specific, ptr) != 0)

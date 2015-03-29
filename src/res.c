@@ -260,12 +260,12 @@ void _res_add(struct _res_mem_t *mem, size_t nbytes)
 	_backtrace(mem->trace, RES_NTRACE);
 #endif
 
-	mutex_lock(&lock);
+	_mutex_lock(&lock);
 	memcnt++;
 #if _debug || _test
 	memnbytes += mem->nbytes = nbytes;
 #endif
-	mutex_unlock(&lock);
+	_mutex_unlock(&lock);
 
 	mem->prev = info->mtail;
 	mem->next = NULL;
@@ -287,12 +287,12 @@ void _res_remove(struct _res_mem_t *mem)
 {
 	struct res_info_t *info;
 
-	mutex_lock(&lock);
+	_mutex_lock(&lock);
 	memcnt--;
 #if _debug || _test
 	memnbytes -= mem->nbytes;
 #endif
-	mutex_unlock(&lock);
+	_mutex_unlock(&lock);
 
 	info = res_info();
 
@@ -326,9 +326,9 @@ void res_add(struct _res_node_t *node, ssize_t offset, void (*destroy)(void *))
 	//_backtrace(node->trace, RES_NTRACE);
 #endif
 
-	mutex_lock(&lock);
+	_mutex_lock(&lock);
 	nodecnt++;
-	mutex_unlock(&lock);
+	_mutex_unlock(&lock);
 
 	node->prev = info->ntail;
 	node->next = NULL;
@@ -355,9 +355,9 @@ void res_remove(struct _res_node_t *node)
 
 	info = res_info();
 
-	mutex_lock(&lock);
+	_mutex_lock(&lock);
 	nodecnt--;
-	mutex_unlock(&lock);
+	_mutex_unlock(&lock);
 
 	if(node->next == NULL)
 		info->ntail = node->prev;

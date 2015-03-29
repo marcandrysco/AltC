@@ -16,8 +16,9 @@ void *_thread_join(_thread_t thread);
 _mutex_t _mutex_init();
 void _mutex_destroy(_mutex_t *mutex);
 
-void mutex_lock(_mutex_t *mutex);
-void mutex_unlock(_mutex_t *mutex);
+void _mutex_lock(_mutex_t *mutex);
+bool _mutex_trylock(_mutex_t *mutex);
+void _mutex_unlock(_mutex_t *mutex);
 
 /*
  * thread-local function declarations
