@@ -11,8 +11,8 @@ void mem_free(void *ptr);
 void _mem_freelc(unsigned int nptrs, void **ptrs);
 void mem_erase(void *ptr);
 
-void mem_copy(char *restrict dest, const char *restrict src, size_t nbytes);
-void mem_move(char *dest, const char *src, size_t nbytes);
+void mem_copy(void *restrict dest, const void *restrict src, size_t nbytes);
+void mem_move(void *dest, const void *src, size_t nbytes);
 
 /*
  * convenience macros

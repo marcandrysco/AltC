@@ -15,7 +15,7 @@ struct m_rand_t {
  * random function declarations
  */
 
-struct m_rand_t m_rand_new(uint32_t seed);
+struct m_rand_t m_rand_init(uint32_t seed);
 uint32_t m_rand_next(struct m_rand_t *rand);
 double m_rand_nextd(struct m_rand_t *rand);
 
@@ -31,6 +31,31 @@ static inline int m_min_int(int left, int right)
 {
 	return (left < right) ? left : right;
 }
+
+/**
+ * Calculate minimum of two unsigned integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The minimum.
+ */
+
+static inline unsigned int m_min_uint(unsigned int left, unsigned int right)
+{
+	return (left < right) ? left : right;
+}
+
+/**
+ * Calculate minimum of two doubles.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The minimum.
+ */
+
+static inline double m_min_double(double left, double right)
+{
+	return (left < right) ? left : right;
+}
+
 
 /**
  * Calculate maximum of two integers.
@@ -64,6 +89,18 @@ static inline unsigned int m_max_uint(unsigned int left, unsigned int right)
  */
 
 static inline uint16_t m_max_uint16(uint16_t left, uint16_t right)
+{
+	return (left > right) ? left : right;
+}
+
+/**
+ * Calculate maximum of two doubles.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The maximum.
+ */
+
+static inline double m_max_double(double left, double right)
 {
 	return (left > right) ? left : right;
 }

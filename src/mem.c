@@ -103,7 +103,7 @@ void _mem_release(struct _res_mem_t *mem)
  */
 
 _export
-void mem_copy(char *restrict dest, const char *restrict src, size_t nbytes)
+void mem_copy(void *restrict dest, const void *restrict src, size_t nbytes)
 {
 	memcpy(dest, src, nbytes);
 }
@@ -116,7 +116,7 @@ void mem_copy(char *restrict dest, const char *restrict src, size_t nbytes)
  */
 
 _export
-void mem_move(char *dest, const char *src, size_t nbytes)
+void mem_move(void *dest, const void *src, size_t nbytes)
 {
 	memmove(dest, src, nbytes);
 }

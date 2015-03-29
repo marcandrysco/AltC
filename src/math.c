@@ -9,7 +9,7 @@
  */
 
 _export
-struct m_rand_t m_rand_new(uint32_t seed)
+struct m_rand_t m_rand_init(uint32_t seed)
 {
 	return (struct m_rand_t){ 123456789, 362436069, 521288629, seed };
 }
@@ -30,6 +30,7 @@ uint32_t m_rand_next(struct m_rand_t *rand)
 	  rand->y = rand->z;
 	  rand->z = rand->w;
 	  rand->w = rand->w ^ (rand->w >> 19) ^ (t ^ (t >> 8));
+
 	  return rand->w;
 }
 
