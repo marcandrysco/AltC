@@ -6,6 +6,7 @@
  */
 
 struct io_chunk_t io_chunk_str(const char *str);
+struct io_chunk_t io_chunk_space(intptr_t cnt);
 struct io_chunk_t io_chunk_tab(intptr_t cnt);
 
 size_t io_chunk_proc_len(struct io_chunk_t chunk);

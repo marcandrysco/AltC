@@ -10,6 +10,7 @@
  */
 
 static void str_proc(struct io_output_t output, void *arg);
+static void space_proc(struct io_output_t output, void *arg);
 static void tab_proc(struct io_output_t output, void *arg);
 
 static bool len_ctrl(size_t *len, unsigned int cmd, void *data);
@@ -46,8 +47,34 @@ static void str_proc(struct io_output_t output, void *arg)
 }
 
 /**
+ * Create a space chunk.
+ *   @cnt: The number of spaces.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_space(intptr_t cnt)
+{
+	return (struct io_chunk_t){ space_proc, (void *)cnt };
+}
+
+/**
+ * Processing callback for space chunks.
+ *   @output: The output.
+ *   @arg: the argument.
+ */
+
+static void space_proc(struct io_output_t output, void *arg)
+{
+	intptr_t i;
+
+	for(i = 0; i < (intptr_t)arg; i++)
+		io_print_char(output, ' ');
+}
+
+/**
  * Create a tab chunk.
- *   @cnt: The nu
+ *   @cnt: The number of tabs.
  *   &returns: The chunk.
  */
 
@@ -68,7 +95,7 @@ static void tab_proc(struct io_output_t output, void *arg)
 	intptr_t i;
 
 	for(i = 0; i < (intptr_t)arg; i++)
-		io_print_char(output, '\n');
+		io_print_char(output, '\t');
 }
 
 
