@@ -120,3 +120,15 @@ void mem_move(void *dest, const void *src, size_t nbytes)
 {
 	memmove(dest, src, nbytes);
 }
+
+/**
+ * Zero the memory.
+ *   @mem: The destination.
+ *   @nbytes: The number of bytes.
+ */
+
+_export
+void mem_zero(void *dest, size_t nbytes)
+{
+	memset(dest, 0x00, nbytes);
+}
