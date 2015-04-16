@@ -95,6 +95,18 @@ void cfg_end(struct cfg_writer_t *writer, const char *key)
 
 
 /**
+ * Write a key.
+ *   @writer: The writer.
+ *   @key: The key.
+ */
+
+_export
+void cfg_write(struct cfg_writer_t *writer, const char *key)
+{
+	io_printf(writer->output, "%C%s\n", io_chunk_tab(writer->tab), key);
+}
+
+/**
  * Write a formatted line to the writer.
  *   @writer: The writer.
  *   @key: The key.
@@ -257,6 +269,20 @@ struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key)
 	reader->buf = buf_line(reader);
 
 	return line;
+}
+
+
+/**
+ * Check if a line exists, throwing an error if it does not.
+ *   @reader: The reader.
+ *   @key: The key.
+ */
+
+_export
+void cfg_check(struct cfg_reader_t *reader, const char *key)
+{
+	if(!cfg_read(reader, key))
+		throw("Missing directive '%s'.", key);
 }
 
 

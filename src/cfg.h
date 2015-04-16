@@ -74,6 +74,8 @@ const char *cfg_reader_peak(struct cfg_reader_t *reader);
 struct cfg_line_t *cfg_reader_check(struct cfg_reader_t *reader, const char *key);
 struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key);
 
+void cfg_check(struct cfg_reader_t *reader, const char *key);
+
 bool cfg_read(struct cfg_reader_t *reader, const char *restrict key);
 bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...);
 struct cfg_line_t *cfg_read_line(struct cfg_reader_t *reader);
