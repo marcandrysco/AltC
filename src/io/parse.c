@@ -13,9 +13,31 @@ static int8_t convdigit(int16_t byte);
 
 
 /**
+ * Parse whitespace.
+ *   @input: The input.
+ *   @byte: The buffered byte.
+ *   &returns: The amount of whitespace parsed.
+ */
+
+_export
+unsigned int io_parse_trim(struct io_input_t input, int16_t *byte)
+{
+	unsigned int cnt;
+
+	if(*byte < 0)
+		*byte = io_input_byte(input);
+
+	for(cnt = 0; str_isspace(*byte); cnt++)
+		*byte = io_input_byte(input);
+
+	return cnt;
+}
+
+/**
  * Parse an unsigned integer from the input.
  *   @input: The input.
  *   @byte: The buffered byte.
+ *   &returns: The unsigned integer.
  */
 
 _export
@@ -57,6 +79,58 @@ unsigned int io_parse_uint(struct io_input_t input, int16_t *byte)
 	}
 
 	return num;
+}
+
+/**
+ * Parse a double from the input.
+ *   @input: The input.
+ *   @byte: The buffered byte.
+ *   &returns: The double.
+ */
+
+_export
+double io_parse_double(struct io_input_t input, int16_t *byte)
+{
+	char buf[256], *endptr;
+	uint8_t i = 0;
+	double val;
+
+	if(*byte < 0)
+		*byte = io_input_byte(input);
+
+	if(*byte == '-')
+		buf[i++] = *byte, *byte = io_input_byte(input);
+
+	while(str_isdigit(*byte))
+		buf[i++] = *byte, *byte = io_input_byte(input);
+
+	if(*byte == '.') {
+		buf[i++] = *byte, *byte = io_input_byte(input);
+
+		while(str_isdigit(*byte))
+			buf[i++] = *byte, *byte = io_input_byte(input);
+
+		if(*byte == 'e') {
+			buf[i++] = *byte, *byte = io_input_byte(input);
+
+			if(*byte == '-')
+				buf[i++] = *byte, *byte = io_input_byte(input);
+
+			while(str_isdigit(*byte))
+				buf[i++] = *byte, *byte = io_input_byte(input);
+		}
+	}
+
+	if(i == 0)
+		throw("Invalid number.");
+
+	buf[i] = '\0';
+	errno = 0;
+	val = strtod(buf, &endptr);
+	if(errno != 0)
+		throw("Invalid number.");
+
+	return val;
 }
 
 

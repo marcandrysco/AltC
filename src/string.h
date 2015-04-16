@@ -50,6 +50,7 @@ struct io_input_t str_inputptr(const char *restrict *ptr);
  */
 
 unsigned int str_parse_uint(const char *str);
+double str_parse_double(const char *str);
 void str_parsef(const char *restrict str, const char *restrict format, ...);
 
 unsigned int str_scan_uint(const char *str, char **endptr);

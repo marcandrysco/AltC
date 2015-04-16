@@ -8,6 +8,7 @@
 void *new_null();
 void delete_noop(void *ref);
 
+int compare_uint(const void *left, const void *right);
 int compare_ptr(const void *left, const void *right);
 int compare_str(const void *left, const void *right);
 

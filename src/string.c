@@ -554,12 +554,42 @@ static size_t input_read(void *ref, void *restrict buf, size_t nbytes)
 }
 
 
+/**
+ * Parse an unsigned integer from a string.
+ *   @str: The string.
+ *   &returns: The unsigned integer.
+ */
+
 _export
 unsigned int str_parse_uint(const char *str)
 {
 	int16_t byte = -1;
+	unsigned int val;
 
-	return io_parse_uint(str_inputptr(&str), &byte);
+	val = io_parse_uint(str_inputptr(&str), &byte);
+	if(byte >= 0)
+		throw("Extra text after number.");
+
+	return val;
+}
+
+/**
+ * Parse a double from a string.
+ *   @str: The string.
+ *   &returns: The double.
+ */
+
+_export
+double str_parse_double(const char *str)
+{
+	int16_t byte = -1;
+	double val;
+
+	val = io_parse_double(str_inputptr(&str), &byte);
+	if(byte >= 0)
+		throw("Extra text after number.");
+
+	return val;
 }
 
 

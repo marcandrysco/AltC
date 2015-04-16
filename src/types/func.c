@@ -26,7 +26,25 @@ void delete_noop(void *ref)
 
 
 /**
- * Compares two pointers.
+ * Compare unsigned integers.
+ *   @left: The left unsigned integer pointer.
+ *   @right: The right unsigned integer pointer.
+ *   &returns: Their order.
+ */
+
+_export
+int compare_uint(const void *left, const void *right)
+{
+	if(*(unsigned int *)left > *(unsigned int *)right)
+		return 1;
+	else if(*(unsigned int *)left < *(unsigned int *)right)
+		return -1;
+	else
+		return 0;
+}
+
+/**
+ * Compare two pointers.
  *   @left: The left pointer.
  *   @right: The right pointer.
  *   &returns: Their order.
@@ -44,7 +62,7 @@ int compare_ptr(const void *left, const void *right)
 }
 
 /**
- * Compares two strings as pointers.
+ * Compare two strings as pointers.
  *   @left: The left pointer.
  *   @right: The right pointer.
  *   &returns: Their order.

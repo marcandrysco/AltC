@@ -44,6 +44,19 @@ void *mem_realloc(void *ptr, size_t nbytes)
 }
 
 /**
+ * Set a memory pointer. The destination is freed if not null.
+ *   @dest: The destination pointer.
+ *   @src: Optional. Consumed. The source string.
+ */
+
+_export
+void _mem_set(void **dest, void *src)
+{
+	mem_erase(*dest);
+	*dest = src;
+}
+
+/**
  * Free memory.
  *   @ptr: The pointer.
  */

@@ -119,7 +119,7 @@ static struct inst_t *inst_open(const char *path, enum io_flag_e flags)
 {
 	_file_t file;
 
-	file = _open(path, (flags | io_write_e | io_trunc_e | io_create_e) & ~(io_read_e | io_append_e));
+	file = _open(path, (flags | io_write_e | io_create_e | (io_append_e ? 0 : io_trunc_e)) & ~(io_read_e));
 	if(file < 0)
 		throw("Cannot open file '%s'. %s.", path, _errstr);
 
