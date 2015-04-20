@@ -8,35 +8,6 @@
 #define AVLTREE_MAX_HEIGHT	48
 
 
-/**
- * AVL tree root structure.
- *   @count: The number of nodes.
- *   @node: The root node.
- *   @compare: The comparison callback.
- */
-
-struct avltree_root_t {
-	unsigned int count;
-	struct avltree_node_t *node;
-
-	compare_f compare;
-};
-
-/**
- * AVL tree node storage.
- *   @balance: The current balance of the node, between '-2' to '2'.
- *   @ref: The reference.
- *   @parent, child: The parent and child nodes.
- */
-
-struct avltree_node_t {
-	int8_t balance;
-
-	void *ref;
-	struct avltree_node_t *parent, *child[2];
-};
-
-
 /*
  * avl tree root function declarations
  */
@@ -60,5 +31,19 @@ struct avltree_node_t avltree_node_init(void *ref);
 
 struct avltree_node_t *avltree_node_prev(struct avltree_node_t *node);
 struct avltree_node_t *avltree_node_next(struct avltree_node_t *node);
+
+/*
+ * avl tree function declarations
+ */
+
+struct avltree_t avltree_init(compare_f compare, delete_f delete);
+void avltree_destroy(struct avltree_t *tree);
+
+void avltree_insert(struct avltree_t *tree, const void *key, void *ref);
+
+struct avltree_inst_t *avltree_first(struct avltree_t *tree);
+struct avltree_inst_t *avltree_last(struct avltree_t *tree);
+struct avltree_inst_t *avltree_prev(struct avltree_inst_t *inst);
+struct avltree_inst_t *avltree_next(struct avltree_inst_t *inst);
 
 #endif

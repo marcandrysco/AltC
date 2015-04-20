@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "avltree.h"
+#include "../mem.h"
 #include "../try.h"
 
 
@@ -21,6 +22,9 @@ static void *getref(struct avltree_node_t *node, ssize_t offset);
 
 static struct avltree_node_t *rotate_single(struct avltree_node_t *node, uint8_t dir);
 static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t dir);
+
+static struct avltree_inst_t *inst_new(const void *key, void *ref, delete_f delete);
+static void inst_delete(struct avltree_inst_t *inst);
 
 
 /**
@@ -395,6 +399,106 @@ struct avltree_node_t *avltree_node_next(struct avltree_node_t *node)
 
 
 /**
+ * Initialize an AVL tree.
+ *   @compare: The compare function.
+ *   @delete: The deletion function.
+ *   &returns: The AVL tree.
+ */
+
+_export
+struct avltree_t avltree_init(compare_f compare, delete_f delete)
+{
+	return (struct avltree_t){ avltree_root_init(compare), delete };
+}
+
+/**
+ * Destroy an AVL tree.
+ *   @tree: The tree.
+ */
+
+_export
+void avltree_destroy(struct avltree_t *tree)
+{
+	avltree_root_destroy(&tree->root, offsetof(struct avltree_inst_t, node), (delete_f)inst_delete);
+}
+
+
+/**
+ * Insert a key-value pair into the tree.
+ *   @tree: The tree.
+ *   @key: The key.
+ *   @ref: The reference value.
+ */
+
+_export
+void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
+{
+	avltree_root_insert(&tree->root, &inst_new(key, ref, tree->delete)->node);
+}
+
+
+/**
+ * Retrieve the first instance from the AVL tree.
+ *   @tree: The AVL tree.
+ *   &returns: The instance or null.
+ */
+
+_export
+struct avltree_inst_t *avltree_first(struct avltree_t *tree)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_root_first(&tree->root);
+	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+}
+
+/**
+ * Retrieve the last instance from the AVL tree.
+ *   @tree: The AVL tree.
+ *   &returns: The instance or null.
+ */
+
+_export
+struct avltree_inst_t *avltree_last(struct avltree_t *tree)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_root_last(&tree->root);
+	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+}
+
+/**
+ * Retrieve the previous AVL tree instance.
+ *   @inst: The current instance.
+ *   &returns: The previous instance or null.
+ */
+
+_export
+struct avltree_inst_t *avltree_prev(struct avltree_inst_t *inst)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_prev(&inst->node);
+	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+}
+
+/**
+ * Retrieve the next AVL tree instance.
+ *   @inst: The current instance.
+ *   &returns: The next instance or null.
+ */
+
+_export
+struct avltree_inst_t *avltree_next(struct avltree_inst_t *inst)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_next(&inst->node);
+	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+}
+
+
+/**
  * Retrieve the reference from a node.
  *   @node: The node.
  *   @offset: The offset.
@@ -459,4 +563,36 @@ static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t
 	node->child[OTHERNODE(dir)] = rotate_single(node->child[OTHERNODE(dir)], OTHERNODE(dir));
 
 	return rotate_single(node, dir);
+}
+
+
+/**
+ * Create an instance.
+ *   @key: The key.
+ *   @ref: The reference.
+ *   @delete: Deletion.
+ *   &returns: The instance.
+ */
+
+static struct avltree_inst_t *inst_new(const void *key, void *ref, delete_f delete)
+{
+	struct avltree_inst_t *inst;
+
+	inst = mem_alloc(sizeof(struct avltree_inst_t));
+	inst->node = avltree_node_init((void *)key);
+	inst->ref = ref;
+	inst->delete = delete;
+
+	return inst;
+}
+
+/**
+ * Delete an instance.
+ *   @inst: The instance.
+ */
+
+static void inst_delete(struct avltree_inst_t *inst)
+{
+	inst->delete(inst->ref);
+	mem_free(inst);
 }
