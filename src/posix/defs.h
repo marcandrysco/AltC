@@ -18,7 +18,17 @@ typedef int _fd_t;
 typedef void *_dynlib_t;
 typedef pthread_t _thread_t;
 typedef pthread_mutex_t _mutex_t;
+typedef pthread_cond_t _cond_t;
 typedef pthread_key_t _specific_t;
+typedef pthread_once_t _once_t;
+
+typedef int _socket_t;
+
+/*
+ * definitions
+ */
+
+#define _ONCE_INIT PTHREAD_ONCE_INIT
 
 
 /**

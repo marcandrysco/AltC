@@ -19,8 +19,8 @@ struct _poll_t {
  */
 
 enum _poll_e {
-	_poll_in_e,
-	_poll_out_e
+	_poll_in_e = 0x01,
+	_poll_out_e = 0x02
 };
 
 

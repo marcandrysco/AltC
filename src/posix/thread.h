@@ -5,6 +5,7 @@
  * thread function declarations
  */
 
+void _thread_once(_once_t *once, void (*func)(void));
 _thread_t _thread_new(void *(*func)(void *), void *arg);
 void _thread_detach(_thread_t thread);
 void *_thread_join(_thread_t thread);
@@ -19,6 +20,16 @@ void _mutex_destroy(_mutex_t *mutex);
 void _mutex_lock(_mutex_t *mutex);
 bool _mutex_trylock(_mutex_t *mutex);
 void _mutex_unlock(_mutex_t *mutex);
+
+/*
+ * condition variable declarations
+ */
+
+_cond_t _cond_init();
+void _cond_destroy(_cond_t *cond);
+
+void _cond_wait(_cond_t *cond, _mutex_t *mutex);
+void _cond_signal(_cond_t *cond);
 
 /*
  * thread-local function declarations

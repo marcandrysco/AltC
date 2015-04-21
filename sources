@@ -42,6 +42,7 @@ Target
 	Source	"src/posix/err.c"
 	Source	"src/posix/file.c"
 	Source	"src/posix/fs.c"
+	Source	"src/posix/net.c"
 	Source	"src/posix/poll.c"
 	Source	"src/posix/thread.c"
 	Source	"src/posix/time.c"

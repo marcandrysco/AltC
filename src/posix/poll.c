@@ -35,13 +35,12 @@ unsigned int _poll(struct _poll_t *fds, unsigned int nfds, int64_t timeout)
 		throw("Poll failed. %s.", strerror(errno));
 
 	for(i = 0; i < nfds; i++) {
-		set[i].fd = fds[i].fd;
-		set[i].events = set[i].revents = 0;
+		fds[i].revents = 0;
 
-		if(set[i].events & POLLIN)
+		if(set[i].revents & POLLIN)
 			fds[i].revents |= _poll_in_e;
 
-		if(set[i].events & POLLOUT)
+		if(set[i].revents & POLLOUT)
 			fds[i].revents |= _poll_out_e;
 	}
 

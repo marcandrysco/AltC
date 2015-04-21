@@ -9,6 +9,7 @@ HEADERS = \
 	src/posix/err.h \
 	src/posix/file.h \
 	src/posix/fs.h \
+	src/posix/net.h \
 	src/posix/poll.h \
 	src/posix/thread.h \
 	src/posix/time.h \
@@ -34,6 +35,7 @@ HEADERS = \
 	src/io/chunk.h \
 	src/io/input.h \
 	src/io/output.h \
+	src/io/parse.h \
 	src/io/print.h \
 	src/io/string.h \
 	\

@@ -2,6 +2,21 @@
 #include "thread.h"
 #include "../try.h"
 
+/**
+ * Execute a function only once.
+ *   @once: The control.
+ *   @func: The function.
+ */
+
+_export
+void _thread_once(_once_t *once, void (*func)(void))
+{
+	int err;
+
+	err = pthread_once(once, func);
+	if(err != 0)
+		throw("Failed execute once. %s.", strerror(err));
+}
 
 /**
  * Create a new thread.
@@ -88,7 +103,7 @@ void _mutex_destroy(_mutex_t *mutex)
 
 	err = pthread_mutex_destroy(mutex);
 	if(err != 0)
-		throw("Failed create mutex. %s.", strerror(err));
+		throw("Failed destroy mutex. %s.", strerror(err));
 }
 
 
@@ -139,7 +154,73 @@ void _mutex_unlock(_mutex_t *mutex)
 
 	err = pthread_mutex_unlock(mutex);
 	if(err != 0)
-		throw("Failed lock mutex. %s.", strerror(err));
+		throw("Failed unlock mutex. %s.", strerror(err));
+}
+
+
+/**
+ * Initialize a condition variable.
+ *   &returns: The condition variable.
+ */
+
+_export
+_cond_t _cond_init()
+{
+	int err;
+	_cond_t cond;
+
+	err = pthread_cond_init(&cond, NULL);
+	if(err != 0)
+		throw("Failed create condition variable. %s.", strerror(err));
+
+	return cond;
+}
+
+/**
+ * Destroy a condition variable.
+ *   @cond: The condition variable.
+ */
+
+_export
+void _cond_destroy(_cond_t *cond)
+{
+	int err;
+
+	err = pthread_cond_destroy(cond);
+	if(err != 0)
+		throw("Failed destroy condition variable. %s.", strerror(err));
+}
+
+
+/**
+ * Wait on a condition variable.
+ *   @cond: The condition variable.
+ *   @mutex: The mutex.
+ */
+
+_export
+void _cond_wait(_cond_t *cond, _mutex_t *mutex)
+{
+	int err;
+
+	err = pthread_cond_wait(cond, mutex);
+	if(err != 0)
+		throw("Failed wait on condition variable. %s.", strerror(err));
+}
+
+/**
+ * Signal a condition variable.
+ *   @cond: The condition variable.
+ */
+
+_export
+void _cond_signal(_cond_t *cond)
+{
+	int err;
+
+	err = pthread_cond_signal(cond);
+	if(err != 0)
+		throw("Failed signal on condition variable. %s.", strerror(err));
 }
 
 

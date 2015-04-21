@@ -4,6 +4,7 @@
 #include "err.h"
 #include "file.h"
 #include "fs.h"
+#include "net.h"
 #include "thread.h"
 #include "trace.h"
 
