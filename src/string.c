@@ -109,6 +109,18 @@ bool str_chk(const char *left, const char *right)
 
 
 /**
+ * Check if a character is a space.
+ *   @ch: The character.
+ *   &returns: True if space, false otherwise.
+ */
+
+_export
+bool str_isspace(char ch)
+{
+	return isspace(ch);
+}
+
+/**
  * Check if a character is a digit.
  *   @ch: The character.
  *   &returns: True if digit, false otherwise.
@@ -121,15 +133,27 @@ bool str_isdigit(char ch)
 }
 
 /**
- * Check if a character is a space.
+ * Check if a character is an alphabetical character.
  *   @ch: The character.
- *   &returns: True if space, false otherwise.
+ *   &returns: True if alphabetical character, false otherwise.
  */
 
 _export
-bool str_isspace(char ch)
+bool str_isalpha(char ch)
 {
-	return isspace(ch);
+	return isalpha(ch);
+}
+
+/**
+ * Check if a character is an alphabetical character or number.
+ *   @ch: The character.
+ *   &returns: True if alphabetical character or number, false otherwise.
+ */
+
+_export
+bool str_isalnum(char ch)
+{
+	return isalnum(ch);
 }
 
 

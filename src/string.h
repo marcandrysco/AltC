@@ -13,8 +13,10 @@ bool str_isequal(const char *left, const char *right);
 int str_cmp(const char *left, const char *right);
 bool str_chk(const char *left, const char *right);
 
-bool str_isdigit(char ch);
 bool str_isspace(char ch);
+bool str_isdigit(char ch);
+bool str_isalpha(char ch);
+bool str_isalnum(char ch);
 
 size_t str_ltrim(const char *str);
 char *str_ltrimp(const char *str);
