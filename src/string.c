@@ -9,6 +9,12 @@
 #include "try.h"
 
 
+struct output_t {
+	char **str;
+	struct strbuf_t buf;
+};
+
+
 /*
  * local function declarations
  */
@@ -24,6 +30,10 @@ static size_t len_write(void *ref, const void *restrict buf, size_t nbytes);
 static bool input_ctrl(void *ref, unsigned int id, void *data);
 static void input_close(void *ref);
 static size_t input_read(void *ref, void *restrict buf, size_t nbytes);
+
+static bool output_ctrl(struct output_t *output, unsigned int id, void *data);
+static void output_close(struct output_t *output);
+static size_t output_write(struct output_t *output, void *restrict buf, size_t nbytes);
 
 
 /**
@@ -575,6 +585,65 @@ static size_t input_read(void *ref, void *restrict buf, size_t nbytes)
 	}
 
 	return read;
+}
+
+
+/**
+ * Create an output to a string.
+ *   @str: The string.
+ *   &returns: The output.
+ */
+
+_export
+struct io_output_t str_output(char **str)
+{
+	struct output_t *output;
+	static const struct io_output_i iface = { { (io_ctrl_f)output_ctrl, (io_close_f)output_close }, (io_write_f)output_write };
+
+	output = mem_alloc(sizeof(struct output_t));
+	output->str = str;
+	output->buf = strbuf_init(64);
+
+	return (struct io_output_t){ output, &iface };
+}
+
+/**
+ * Handle a control signal for a output.
+ *   @ref: The reference.
+ *   @id: The control identifier.
+ *   @data: The control data.
+ *   &returns: True if the signal is handle, false otherwise.
+ */
+
+static bool output_ctrl(struct output_t *output, unsigned int id, void *data)
+{
+	return false;
+}
+
+/**
+ * Close the string output.
+ *   @output: The output.
+ */
+
+static void output_close(struct output_t *output)
+{
+	*output->str = strbuf_done(&output->buf);
+	mem_free(output);
+}
+
+/**
+ * Write to an output.
+ *   @ref: The reference.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ *   &returns: The number of bytes written.
+ */
+
+static size_t output_write(struct output_t *output, void *restrict buf, size_t nbytes)
+{
+	strbuf_write(&output->buf, buf, nbytes);
+
+	return nbytes;
 }
 
 

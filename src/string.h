@@ -47,6 +47,8 @@ char *str_vaprintf(const char *restrict format, va_list args);
 struct io_input_t str_input(const char *restrict str);
 struct io_input_t str_inputptr(const char *restrict *ptr);
 
+struct io_output_t str_output(char **str);
+
 /*
  * parse function declarations
  */

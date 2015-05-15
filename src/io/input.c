@@ -32,6 +32,12 @@ static void inst_close(struct inst_t *inst);
 static size_t inst_read(struct inst_t *inst, void *buf, size_t nbytes);
 static bool inst_ctrl(struct inst_t *inst, unsigned int id, void *data);
 
+/*
+ * global variables
+ */
+
+_export struct io_input_t io_stdin;
+
 
 /**
  * Create a new I/O input.

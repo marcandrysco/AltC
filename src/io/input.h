@@ -2,7 +2,7 @@
 #define IO_INPUT_H
 
 /*
- * output variables
+ * input variables
  */
 
 extern struct io_input_t io_stdin;
