@@ -160,4 +160,14 @@ struct io_chunk_t {
 
 typedef struct io_chunk_t (*io_chunk_init_f)(void *ref);
 
+
+/**
+ * Control signal enumerator.
+ *   @io_tell_e: Tell the current position.
+ */
+
+enum io_ctrl_e {
+	io_tell_e = 0x0001
+};
+
 #endif

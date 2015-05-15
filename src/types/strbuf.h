@@ -28,4 +28,6 @@ void strbuf_write(struct strbuf_t *buf, const char *restrict data, size_t nbytes
 char *strbuf_done(struct strbuf_t *buf);
 const char *strbuf_finish(struct strbuf_t *buf);
 
+struct io_output_t strbuf_output(struct strbuf_t *buf);
+
 #endif

@@ -66,4 +66,20 @@ static inline void io_output_char(struct io_output_t output, char ch)
 	io_output_full(output, &ch, sizeof(char));
 }
 
+
+/**
+ * Retrieve the current position of the output.
+ *   @output: The output.
+ *   &returns: The position.
+ */
+
+static inline uint64_t io_output_tell(struct io_output_t output)
+{
+	uint64_t pos = 0;
+
+	io_output_ctrl(output, io_tell_e, &pos);
+
+	return pos;
+}
+
 #endif
