@@ -62,6 +62,19 @@ void strbuf_destroy(struct strbuf_t *buf)
 
 
 /**
+ * Retrieve the last character from the string buffer.
+ *   @buf: The string buffer.
+ *   &returns: The last character or null.
+ */
+
+_export
+char strbuf_last(struct strbuf_t *buf)
+{
+	return (buf->i > 0) ? buf->store[buf->i - 1] : '\0';
+}
+
+
+/**
  * Reset the internal index to the beginning.
  *   @buf: The string buffer.
  */

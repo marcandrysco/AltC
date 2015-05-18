@@ -20,6 +20,8 @@ struct strbuf_t {
 struct strbuf_t strbuf_init(size_t initlen);
 void strbuf_destroy(struct strbuf_t *buf);
 
+char strbuf_last(struct strbuf_t *buf);
+
 void strbuf_reset(struct strbuf_t *buf);
 void strbuf_store(struct strbuf_t *buf, char ch);
 void strbuf_append(struct strbuf_t *buf, const char *restrict str);
