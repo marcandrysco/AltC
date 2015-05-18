@@ -45,6 +45,18 @@ static inline unsigned int m_min_uint(unsigned int left, unsigned int right)
 }
 
 /**
+ * Calculate minimum of two size integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The minimum.
+ */
+
+static inline size_t m_min_size(size_t left, size_t right)
+{
+	return (left < right) ? left : right;
+}
+
+/**
  * Calculate minimum of two doubles.
  *   @left: The left number.
  *   @right: The right number.
@@ -89,6 +101,18 @@ static inline unsigned int m_max_uint(unsigned int left, unsigned int right)
  */
 
 static inline uint16_t m_max_uint16(uint16_t left, uint16_t right)
+{
+	return (left > right) ? left : right;
+}
+
+/**
+ * Calculate maximum of two size integers.
+ *   @left: The left number.
+ *   @right: The right number.
+ *   &returns: The maximum.
+ */
+
+static inline size_t m_max_size(size_t left, size_t right)
 {
 	return (left > right) ? left : right;
 }

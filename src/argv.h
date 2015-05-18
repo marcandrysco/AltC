@@ -7,5 +7,6 @@
 
 void argv_parse(const char *str, char ***argv, unsigned int *argc);
 void argv_delete(char **argv);
+char *argv_serial(char **argv);
 
 #endif
