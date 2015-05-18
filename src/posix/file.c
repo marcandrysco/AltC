@@ -1,6 +1,7 @@
 #include "../common.h"
 #include "file.h"
 #include <fcntl.h>
+#include <termios.h>
 #include "../try.h"
 
 
@@ -87,4 +88,16 @@ size_t _write(_file_t file, const void *buf, size_t nbytes)
 		throw("Failed to write to file. %s.", strerror(errno));
 
 	return wr;
+}
+
+
+/**
+ * Flush a terminal file.
+ *   @file: The file.
+ */
+
+_export
+void _tcflush(_file_t file)
+{
+	tcflush(file, TCIFLUSH);
 }

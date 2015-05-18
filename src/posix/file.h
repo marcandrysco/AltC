@@ -28,6 +28,8 @@ void _close(_file_t file);
 size_t _read(_file_t file, void *buf, size_t nbytes);
 size_t _write(_file_t file, const void *buf, size_t nbytes);
 
+void _tcflush(_file_t file);
+
 /*
  * standard stream file definitions
  */

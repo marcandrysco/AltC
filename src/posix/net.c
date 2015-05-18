@@ -27,6 +27,8 @@ _socket_t _socket_open(uint16_t port)
 	if(sock < 0)
 		throw("Failed to bind. %s.", strerror(errno));
 
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, mem_getref(int, 1), sizeof(int));
+
 	mem_zero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
@@ -173,7 +175,7 @@ size_t _socket_write(_socket_t sock, const void *buf, size_t nbytes)
 
 	rd = write(sock, buf, nbytes);
 	if(rd < 0)
-		throw("Failed to read from socket. %s.", strerror(errno));
+		throw("Failed to write from socket. %s.", strerror(errno));
 
 	return rd;
 }

@@ -5,6 +5,7 @@
 #include "file.h"
 #include "fs.h"
 #include "net.h"
+#include "poll.h"
 #include "thread.h"
 #include "trace.h"
 
