@@ -5,6 +5,13 @@
 #include "string.h"
 
 
+/*
+ * local function declarations
+ */
+
+static void dirname_proc(struct io_output_t output, void *arg);
+
+
 /**
  * Test if a path exists.
  *   @path: The path.
@@ -122,4 +129,45 @@ void fs_writef(const char *restrict path, const char *restrict format, ...)
 	va_end(args);
 
 	io_output_close(output);
+}
+
+
+/**
+ * Retrieve a chunk for the directory name of a path.
+ *   @path: The path.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t fs_dirname(const char *path)
+{
+	return (struct io_chunk_t){ dirname_proc, (void *)path };
+}
+
+/**
+ * Retrieve the directory name length.
+ *   @path: The path.
+ *   &returns: The length.
+ */
+
+_export
+size_t fs_dirname_len(const char *path)
+{
+	char *endptr;
+
+	endptr = str_rchr(path, '/');
+	return endptr ? (endptr - path) : str_len(path);
+}
+
+/**
+ * Process a directory name chunk.
+ *   @output: The output.
+ *   @arg: The argument.
+ */
+
+static void dirname_proc(struct io_output_t output, void *arg)
+{
+	const char *path = arg;
+
+	io_output_write(output, path, fs_dirname_len(path));
 }

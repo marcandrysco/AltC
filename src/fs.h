@@ -15,4 +15,7 @@ void fs_remove_recurse(const char *path);
 
 void fs_writef(const char *restrict path, const char *restrict format, ...);
 
+struct io_chunk_t fs_dirname(const char *path);
+size_t fs_dirname_len(const char *path);
+
 #endif
