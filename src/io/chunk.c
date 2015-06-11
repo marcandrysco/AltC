@@ -158,6 +158,7 @@ void io_chunk_proc_str(struct io_chunk_t chunk, char *restrict str)
 	static struct io_output_i iface = { { (io_ctrl_f)str_ctrl, delete_noop}, (io_write_f)str_write };
 
 	io_chunk_proc(chunk, (struct io_output_t){ (void *)&str, &iface });
+	*str = '\0';
 }
 
 /**
