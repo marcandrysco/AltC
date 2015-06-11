@@ -34,6 +34,9 @@ void *mem_realloc(void *ptr, size_t nbytes)
 {
 	struct _res_mem_t *mem;
 
+	if(ptr == NULL)
+		return mem_alloc(nbytes);
+
 	mem = ptr -= sizeof(struct _res_mem_t);
 
 	_res_remove(mem);
@@ -105,6 +108,25 @@ void mem_erase(void *ptr)
 void _mem_release(struct _res_mem_t *mem)
 {
 	free(mem);
+}
+
+
+/**
+ * Copy and allocate memory.
+ *   @ptr: The original pointer.
+ *   @nbytes: The number of bytes to copy.
+ *   &returns: The copied memory.
+ */
+
+_export
+void *mem_dup(void *ptr, size_t nbytes)
+{
+	void *copy;
+
+	copy = mem_alloc(nbytes);
+	mem_copy(copy, ptr, nbytes);
+
+	return copy;
 }
 
 
