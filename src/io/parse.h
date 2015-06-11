@@ -8,6 +8,7 @@
 unsigned int io_parse_trim(struct io_input_t input, int16_t *byte);
 unsigned int io_parse_uint(struct io_input_t input, int16_t *byte);
 double io_parse_double(struct io_input_t input, int16_t *byte);
+bool io_parse_bool(struct io_input_t input, int16_t *byte);
 
 void io_parsef(struct io_input_t input, int16_t *byte, const char *restrict format, ...);
 void io_vparsef(struct io_input_t input, int16_t *byte, const char *restrict format, va_list args);

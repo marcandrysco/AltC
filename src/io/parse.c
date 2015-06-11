@@ -133,6 +133,46 @@ double io_parse_double(struct io_input_t input, int16_t *byte)
 	return val;
 }
 
+/**
+ * Parse a boolean from the string 'true' or 'false'.
+ *   @input: The input.
+ *   @byte: The buffered byte.
+ *   &returns: The boolean.
+ */
+
+_export
+bool io_parse_bool(struct io_input_t input, int16_t *byte)
+{
+	unsigned int i;
+	bool val;
+	const char *lower = "rue", *upper = "RUE";
+	if(*byte < 0)
+		*byte = io_input_byte(input);
+
+	if((*byte == 't') || (*byte == 'T')) {
+		val = true;
+		lower = "rue";
+		upper = "RUE";
+	}
+	else if((*byte == 'f') || (*byte == 'F')) {
+		val = false;
+		lower = "alse";
+		upper = "ALSE";
+	}
+	else
+		throw("Invalid boolean value.");
+
+	for(i = 0; lower[i] != '\0'; i++) {
+		*byte = io_input_byte(input);
+		if((*byte != lower[i]) && (*byte != upper[i]))
+			throw("Invalid boolean value. %c vs %c", *byte, lower[i]);
+	}
+
+	*byte = io_input_byte(input);
+
+	return val;
+}
+
 
 _export
 unsigned int io_scanf(struct io_input_t input, int16_t *byte, const char *restrict format, ...)

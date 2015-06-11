@@ -57,12 +57,14 @@ void io_printf_int(struct io_output_t output, struct io_print_mod_t *mod, struct
 void io_printf_uint(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_ptr(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
+void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_smartfp(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_chunk(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 
 void io_format_str(struct io_output_t output, const char *str, uint16_t width, bool neg, char pad);
 void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t width, char pad);
 void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool neg, char pad);
+void io_format_float(struct io_output_t output, double value, int16_t width, uint16_t frac, bool neg, char pad);
 void io_format_smartfp(struct io_output_t output, double value, int16_t width, bool neg, char pad);
 void io_format_chunk(struct io_output_t output, struct io_chunk_t chunk, uint16_t width, bool neg, char pad);
 
