@@ -18,6 +18,34 @@ struct m_rand_t {
 struct m_rand_t m_rand_init(uint32_t seed);
 uint32_t m_rand_next(struct m_rand_t *rand);
 double m_rand_nextd(struct m_rand_t *rand);
+char m_rand_alnum(struct m_rand_t *rand);
+char *m_rand_alnum_str(struct m_rand_t *rand, unsigned int len);
+
+unsigned int m_gcd(unsigned int a, unsigned int b);
+unsigned int m_lcm(unsigned int a, unsigned int b);
+
+
+/**
+ * Square a value.
+ *   @val: The value.
+ *   &returns: The value.
+ */
+
+static inline double m_sqr_double(double val)
+{
+	return val * val;
+}
+
+/**
+ * Cube a value.
+ *   @val: The value.
+ *   &returns: The value.
+ */
+
+static inline double m_cube_double(double val)
+{
+	return val * val * val;
+}
 
 
 /**
