@@ -41,4 +41,11 @@ void _specific_free(_specific_t specific);
 void *_specific_get(_specific_t specific);
 void _specific_set(_specific_t specific, void *ptr);
 
+
+/*
+ * initializer definitions
+ */
+
+#define _MUTEX_INIT PTHREAD_MUTEX_INITIALIZER
+
 #endif
