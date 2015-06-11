@@ -31,6 +31,9 @@ _file_t _open(const char *path, enum _file_e flags, ...)
 	if(flags & io_create_e)
 		oflag |= O_CREAT;
 
+	if(flags & io_append_e)
+		oflag |= O_APPEND;
+
 	file = open(path, oflag, 0666);
 	if(file < 0)
 		throw("Failed to open '%s'. %s.", path, strerror(errno));
