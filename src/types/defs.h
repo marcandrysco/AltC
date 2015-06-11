@@ -6,7 +6,15 @@
  *   &returns: The pointer.
  */
 
-typedef void *(*new_f)();
+typedef void *(*new_f)(void);
+
+/**
+ * Copy callback.
+ *   @ptr: The original pointer.
+ *   &returns: The copied pointer.
+ */
+
+typedef void *(*copy_f)(void *ptr);
 
 /**
  * Delete callback.
