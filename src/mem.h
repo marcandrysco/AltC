@@ -17,6 +17,7 @@ void *mem_dup(void *ptr, size_t nbytes);
 void mem_copy(void *restrict dest, const void *restrict src, size_t nbytes);
 void mem_move(void *dest, const void *src, size_t nbytes);
 void mem_zero(void *dest, size_t nbytes);
+void mem_swap(void *left, void *right, size_t nbytes);
 
 /*
  * convenience macros

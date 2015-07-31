@@ -157,6 +157,18 @@ void mem_move(void *dest, const void *src, size_t nbytes)
 }
 
 /**
+ * Zero the memory.
+ *   @mem: The destination.
+ *   @nbytes: The number of bytes.
+ */
+
+_export
+void mem_zero(void *dest, size_t nbytes)
+{
+	memset(dest, 0x00, nbytes);
+}
+
+/**
  * Swap two pieces of memory.
  *   @left: The left meomry.
  *   @right: The right memory.
@@ -173,16 +185,4 @@ void mem_swap(void *left, void *right, size_t nbytes)
 		*lptr++ = *rptr;
 		*rptr++ = t;
 	}
-}
-
-/**
- * Zero the memory.
- *   @mem: The destination.
- *   @nbytes: The number of bytes.
- */
-
-_export
-void mem_zero(void *dest, size_t nbytes)
-{
-	memset(dest, 0x00, nbytes);
 }
