@@ -159,6 +159,20 @@ static inline double m_max_double(double left, double right)
 
 
 /**
+ * Calculate a limited double value.
+ *   @val: The value.
+ *   @low: The low value.
+ *   @high: The high value.
+ *   &returns: The limited value.
+ */
+
+static inline double m_limit_double(double val, double low, double high)
+{
+	return (val < low) ? low : ((val > high) ? high : val);
+}
+
+
+/**
  * Unsinged integer count the number of leading zeros.
  *   @n: The number.
  *   &returns: The number of leading zeros

@@ -46,6 +46,65 @@ bool fs_exists(const char *path)
 
 
 /**
+ * Check if a path is a directory.
+ *   @path: The path.
+ *   &returns: True if a directory, false otherwise.
+ */
+
+_export
+bool fs_isdir(const char *path)
+{
+	return _isdir(path);
+}
+
+/**
+ * Check if a path is a directory.
+ *   @format: The format.
+ *   @...: The printf-style argument.
+ *   &returns: True if a directory, false otherwise.
+ */
+
+_export
+bool fs_isdirf(const char *restrict format, ...)
+{
+	bool ret;
+	va_list args;
+
+	va_start(args, format);
+	ret = fs_isdirfv(format, args);
+	va_end(args);
+
+	return ret;
+}
+
+/**
+ * Check if a path is a directory.
+ *   @format: The format.
+ *   @args: The printf-style argument.
+ *   &returns: True if a directory, false otherwise.
+ */
+
+_export
+bool fs_isdirfv(const char *restrict format, va_list args)
+{
+	size_t len;
+	va_list copy;
+
+	va_copy(copy, args);
+	len = str_vlprintf(format, copy);
+	va_end(copy);
+
+	{
+		char path[len + 1];
+
+		str_vprintf(path, format, args);
+
+		return fs_isdir(path);
+	}
+}
+
+
+/**
  * Create a directory.
  *   @path: The path.
  */
@@ -88,6 +147,46 @@ void fs_mkdir_parents(const char *path)
 		str[n] = '/';
 		n += str_len(str + n);
 		_mkdir(str);
+	}
+}
+
+/**
+ * Create a directory and all its parents.
+ *   @format: The format string.
+ *   @...: The printf-style arguments.
+ */
+
+_export
+void fs_mkdirf_parents(const char *restrict format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	fs_mkdirfv_parents(format, args);
+	va_end(args);
+}
+
+/**
+ * Create a directory and all its parents.
+ *   @format: The format string.
+ *   @...: The printf-style arguments.
+ */
+
+_export
+void fs_mkdirfv_parents(const char *restrict format, va_list args)
+{
+	va_list copy;
+	size_t len;
+
+	va_copy(copy, args);
+	len = str_vlprintf(format, copy);
+	va_end(copy);
+
+	{
+		char path[len+1];
+
+		str_vprintf(path, format, args);
+		fs_mkdir_parents(path);
 	}
 }
 
