@@ -23,7 +23,7 @@ void mem_zero(void *dest, size_t nbytes);
 #define mem_set(dest, src) _mem_set((void **)dest, src)
 #define mem_freelc(nptrs, ptrs) _mem_freelc(nptrs, (void **)ptrs)
 
-#define mem_getref(type, val) (&(union { type v; }){ .v = (val) })
+#define mem_getref(type, val) &(union { type v; }){ .v = (val) }.v
 #define mem_dupval(type, val) mem_dup(&(union { type v; }){ .v = (val) }, sizeof(type))
 
 #define getcontainer(ptr, type, member) ((type *)((void *)(ptr) - offsetof(type, member)))

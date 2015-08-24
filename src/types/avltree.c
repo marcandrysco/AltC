@@ -137,7 +137,7 @@ struct avltree_node_t *avltree_root_last(struct avltree_root_t *root)
  */
 
 _export
-struct avltree_node_t *avltree_root_lookup(struct avltree_root_t *root, const void *ref)
+struct avltree_node_t *avltree_root_lookup(const struct avltree_root_t *root, const void *ref)
 {
 	int cmp;
 	struct avltree_node_t *node = root->node;
@@ -434,6 +434,22 @@ _export
 void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
 {
 	avltree_root_insert(&tree->root, &inst_new(key, ref, tree->delete)->node);
+}
+
+/**
+ * Lookup a value from the tree.
+ *   @tree: The tree.
+ *   @key: The key.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *avltree_lookup(struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_root_lookup(&tree->root, key);
+	return node ? getcontainer(node, struct avltree_inst_t, node)->ref : NULL;
 }
 
 
