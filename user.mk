@@ -18,6 +18,7 @@ HEADERS = \
 	src/altc.h \
 	src/argv.h \
 	src/cfg.h \
+	src/complex.h \
 	src/dtoa.h \
 	src/dynlib.h \
 	src/fs.h \
@@ -33,11 +34,16 @@ HEADERS = \
 	src/types/strbuf.h \
 	\
 	src/io/chunk.h \
+	src/io/device.h \
 	src/io/input.h \
 	src/io/output.h \
 	src/io/parse.h \
 	src/io/print.h \
+	src/io/reader.h \
 	src/io/string.h \
+	src/io/wrap.h \
+	\
+	src/net/tcp.h \
 	\
 	src/app/dir.h \
 

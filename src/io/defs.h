@@ -162,12 +162,26 @@ typedef struct io_chunk_t (*io_chunk_init_f)(void *ref);
 
 
 /**
+ * I/O cursor structure.
+ *   @line, col: The line and column.
+ */
+
+struct io_cursor_t {
+	uint32_t line, col;
+};
+
+
+/**
  * Control signal enumerator.
  *   @io_tell_e: Tell the current position.
+ *   @io_cursor_get_e: Retrieve the cursor position.
+ *   @io_cursor_put_e: Set the cursor position.
  */
 
 enum io_ctrl_e {
-	io_tell_e = 0x0001
+	io_tell_e = 0x0001,
+	io_cursor_get_e = 0x0100,
+	io_cursor_put_e = 0x0101,
 };
 
 #endif

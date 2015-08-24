@@ -26,6 +26,7 @@ Target
 	Source	"src/altc.c"
 	Source	"src/argv.c"
 	Source	"src/cfg.c"
+	Source	"src/complex.c"
 	Source	"src/dtoa.c"
 	Source	"src/dynlib.c"
 	Source	"src/fs.c"
@@ -58,11 +59,16 @@ Target
 	Extra	"src/io/defs.h"
 	Extra	"src/io/inc.h"
 	Source	"src/io/chunk.c"
+	Source	"src/io/device.c"
 	Source	"src/io/input.c"
 	Source	"src/io/output.c"
 	Source	"src/io/parse.c"
 	Source	"src/io/print.c"
+	Source	"src/io/reader.c"
 	Source	"src/io/string.c"
+	Source	"src/io/wrap.c"
+
+	Source	"src/net/tcp.c"
 
 	Source	"src/app/dir.c"
 
