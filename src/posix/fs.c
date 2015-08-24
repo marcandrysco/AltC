@@ -121,13 +121,16 @@ void _fsiter_destroy(struct _fsiter_t *iter)
  */
 
 _export
-const char *_fsiter_next(struct _fsiter_t *iter)
+const char *_fsiter_next(struct _fsiter_t *iter, bool *dir)
 {
 	struct dirent *result;
 
 	do
 		readdir_r(iter->dir, &iter->entry, &result);
 	while(result && (str_isequal(result->d_name, ".") || str_isequal(result->d_name, "..")));
+
+	if(dir && result)
+		*dir = (result->d_type == DT_DIR);
 
 	return result ? result->d_name : NULL;
 }

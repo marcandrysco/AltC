@@ -55,8 +55,23 @@ struct io_output_t str_output(char **str);
 
 unsigned int str_parse_uint(const char *str);
 double str_parse_double(const char *str);
+bool str_parse_bool(const char *str);
 void str_parsef(const char *restrict str, const char *restrict format, ...);
 
 unsigned int str_scan_uint(const char *str, char **endptr);
+
+
+/**
+ * Retrieve the last character of a string.
+ *   &returns: The last character or null on a zero length string.
+ */
+
+static inline char str_tail(const char *str)
+{
+	size_t len;
+
+	len = str_len(str);
+	return len ? str[len - 1] : '\0';
+}
 
 #endif

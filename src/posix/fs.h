@@ -15,6 +15,6 @@ void _remove(const char *path);
 
 struct _fsiter_t _fsiter_init(const char *path);
 void _fsiter_destroy(struct _fsiter_t *iter);
-const char *_fsiter_next(struct _fsiter_t *iter);
+const char *_fsiter_next(struct _fsiter_t *iter, bool *dir);
 
 #endif

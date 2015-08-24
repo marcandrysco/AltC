@@ -43,6 +43,23 @@ struct cfg_writer_t cfg_writer_open(const char *path)
 }
 
 /**
+ * Open and allocate a configuration writer. 
+ *   @path: The path.
+ *   &returns: The writer.
+ */
+
+_export
+struct cfg_writer_t *cfg_writer_new(const char *path)
+{
+	struct cfg_writer_t *writer;
+
+	writer = mem_alloc(sizeof(struct cfg_writer_t));
+	*writer = cfg_writer_open(path);
+
+	return writer;
+}
+
+/**
  * Delete a configuration writer.
  *   @writer: The writer.
  */
@@ -66,6 +83,18 @@ void cfg_writer_close(struct cfg_writer_t *writer)
 	io_output_close(writer->output);
 }
 
+/**
+ * Delete a writer.
+ *   @writer: The writer.
+ */
+
+_export
+void cfg_writer_delete(struct cfg_writer_t *writer)
+{
+	cfg_writer_close(writer);
+	mem_free(writer);
+}
+
 
 /**
  * Write a begin key.
@@ -77,6 +106,26 @@ _export
 void cfg_begin(struct cfg_writer_t *writer, const char *key)
 {
 	io_printf(writer->output, "%C%s\n", io_chunk_tab(writer->tab), key);
+	writer->tab++;
+}
+
+/**
+ * Write a formatted begin line to the writer.
+ *   @writer: The writer.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ */
+
+_export
+void cfg_beginf(struct cfg_writer_t *writer, const char *key, const char *format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	cfg_writefv(writer, key, format, args);
+	va_end(args);
+
 	writer->tab++;
 }
 
@@ -118,9 +167,25 @@ _export
 void cfg_writef(struct cfg_writer_t *writer, const char *key, const char *format, ...)
 {
 	va_list args;
-	char space = '\t';
 
 	va_start(args, format);
+	cfg_writefv(writer, key, format, args);
+	va_end(args);
+}
+
+/**
+ * Write a formatted line to the writer with a variable argument list.
+ *   @writer: The writer.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ */
+
+_export
+void cfg_writefv(struct cfg_writer_t *writer, const char *key, const char *format, va_list args)
+{
+	char space = '\t';
+
 	io_printf(writer->output, "%C%s", io_chunk_tab(writer->tab), key);
 
 	while(*format != '\0') {
@@ -130,12 +195,14 @@ void cfg_writef(struct cfg_writer_t *writer, const char *key, const char *format
 		switch(*format++) {
 		case 'u': io_printf(writer->output, "\"%u\"", va_arg(args, unsigned int)); break;
 		case 's': io_printf(writer->output, "\"%s\"", va_arg(args, const char *)); break;
+		case 'b': io_printf(writer->output, "\"%s\"", va_arg(args, int) ? "true" : "false"); break;
+		case 'f': io_printf(writer->output, "\"%g\"", va_arg(args, double)); break;
+		case 'C': io_printf(writer->output, "\"%C\"", va_arg(args, struct io_chunk_t)); break;
 		default: throw("Invalid format character '%c'.", format[-1]);
 		}
 	}
 
 	io_printf(writer->output, "\n");
-	va_end(args);
 }
 
 /**
@@ -282,7 +349,7 @@ _export
 void cfg_check(struct cfg_reader_t *reader, const char *key)
 {
 	if(!cfg_read(reader, key))
-		throw("Missing directive '%s'.", key);
+		throw("Missing directive '%s'; line %u.", key, (unsigned int)reader->line);
 }
 
 
@@ -333,6 +400,8 @@ bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char
 		switch(*format++) {
 		case 's': *va_arg(args, char **) = str_dup(line->value[i++]); break;
 		case 'u': *va_arg(args, unsigned int *) = str_parse_uint(line->value[i++]); break;
+		case 'f': *va_arg(args, double *) = str_parse_double(line->value[i++]); break;
+		case 'b': *va_arg(args, bool *) = str_parse_bool(line->value[i++]); break;
 		default: throw("Invalid format character '%c'.", format[-1]);
 		}
 	}

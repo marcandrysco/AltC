@@ -21,6 +21,7 @@ _export struct io_print_t io_print_default[] = {
 	{ 'u', "unsigned", io_printf_uint },
 	{ 'x', "hex", io_printf_hex },
 	{ 'p', "pointer", io_printf_ptr },
+	{ 'f', "float", io_printf_float },
 	{ 'g', "smartfp", io_printf_smartfp },
 	{ 'C', "chunk", io_printf_chunk },
 	/*
@@ -125,6 +126,13 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 				mod.width = 0;
 				while(str_isdigit(*format))
 					mod.width = mod.width * 10 + *format - '0', format++;
+
+				mod.frac = 0;
+				if(*format == '.') {
+					format++;
+					while(str_isdigit(*format))
+						mod.frac = mod.frac * 10 + *format - '0', format++;
+				}
 
 				if(*format == ':') {
 					format++;
@@ -262,6 +270,19 @@ void io_printf_ptr(struct io_output_t output, struct io_print_mod_t *mod, struct
 }
 
 /**
+ * Printf-style floating-point output using a fixed decimal.
+ *   @device: The output device.
+ *   @mod: The modifier.
+ *   @args: The variable argument list with an upcoming string.
+ */
+
+_export
+void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
+{
+	io_format_float(output, va_arg(list->args, double), mod->width, mod->frac, mod->neg, ' ');
+}
+
+/**
  * Printf-style floating-point output using smart decimal.
  *   @device: The output device.
  *   @mod: The modifier.
@@ -396,6 +417,65 @@ void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base,
  *   @value: The value.
  *   @base: The base.
  *   @width: The width.
+ *   @frac: The fractional size.
+ *   @neg: Negative alignment.
+ *   @pad: Padding character.
+ */
+
+_export
+void io_format_float(struct io_output_t output, double value, int16_t width, uint16_t frac, bool neg, char pad)
+{
+	char buf[400], *str;
+
+	if(isnan(value))
+		str_copy(buf, "NaN");
+	else if(value == INFINITY)
+		str_copy(buf, "Inf");
+	else if(value == -INFINITY)
+		str_copy(buf, "-Inf");
+	else {
+		bool opt;
+		char tmp[35];
+		int16_t i, exp, end;
+
+		str = buf;
+
+		if(value < 0)
+			*str++ = '-', value = -value;
+
+		if(value > 0) {
+			exp = errol1_dtoa(value, tmp, &opt) - 1;
+			end = exp - str_len(tmp);
+		}
+		else
+			exp = INT16_MIN, end = INT16_MIN;
+
+		for(i = ((exp > 0) ? exp : 0); i >= -frac; i--) {
+			*str++ = ((i <= exp) && (i > end)) ? tmp[exp-i] : '0';
+
+			if(i == 0)
+				*str++ = '.';
+		}
+
+		*str = '\0';
+	}
+
+	if(str_len(buf) < width) {
+		uint16_t i;
+
+		for(i = str_len(buf); i < width; i++)
+			io_print_char(output, pad);
+	}
+
+	io_print_str(output, buf);
+}
+
+/**
+ * Format a floating-point number.
+ *   @output: The output device.
+ *   @value: The value.
+ *   @base: The base.
+ *   @width: The width.
  *   @neg: Negative alignment.
  *   @pad: Padding character.
  */
@@ -413,10 +493,12 @@ void io_format_smartfp(struct io_output_t output, double value, int16_t width, b
 	else if(value == -INFINITY)
 		io_printf(output, "-Inf");
 	else if(value != 0.0) {
+		bool opt;
+
 		if(value < 0)
 			io_print_char(output, '-'), value = -value;
 
-		exp = errol3_dtoa(value, buf);
+		exp = errol1_dtoa(value, buf, &opt);
 
 		if(exp == 1)
 			io_printf(output, "%c.%c%s", buf[0], buf[1] ?: '0', buf[1] ? buf+2 : "");

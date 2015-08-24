@@ -26,6 +26,24 @@ void delete_noop(void *ref)
 
 
 /**
+ * Compare characters.
+ *   @left: The left characterspointer.
+ *   @right: The right characterspointer.
+ *   &returns: Their order.
+ */
+
+_export
+int compare_char(const void *left, const void *right)
+{
+	if(*(char *)left > *(char *)right)
+		return 1;
+	else if(*(char *)left < *(char *)right)
+		return -1;
+	else
+		return 0;
+}
+
+/**
  * Compare unsigned integers.
  *   @left: The left unsigned integer pointer.
  *   @right: The right unsigned integer pointer.

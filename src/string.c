@@ -685,6 +685,25 @@ double str_parse_double(const char *str)
 	return val;
 }
 
+/**
+ * Parse a boolean from a string.
+ *   @str: The string.
+ *   &returns: The boolean.
+ */
+
+_export
+bool str_parse_bool(const char *str)
+{
+	int16_t byte = -1;
+	bool val;
+
+	val = io_parse_bool(str_inputptr(&str), &byte);
+	if(byte >= 0)
+		throw("Extra text after boolean.");
+
+	return val;
+}
+
 
 _export
 void str_parsef(const char *restrict str, const char *restrict format, ...)

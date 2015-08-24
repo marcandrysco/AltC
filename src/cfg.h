@@ -50,14 +50,18 @@ struct cfg_line_t {
 
 struct cfg_writer_t cfg_writer_init(struct io_output_t output);
 struct cfg_writer_t cfg_writer_open(const char *path);
+struct cfg_writer_t *cfg_writer_new(const char *path);
 void cfg_writer_destroy(struct cfg_writer_t *writer);
 void cfg_writer_close(struct cfg_writer_t *writer);
+void cfg_writer_delete(struct cfg_writer_t *writer);
 
 void cfg_begin(struct cfg_writer_t *writer, const char *key);
+void cfg_beginf(struct cfg_writer_t *writer, const char *key, const char *format, ...);
 void cfg_end(struct cfg_writer_t *writer, const char *key);
 
 void cfg_write(struct cfg_writer_t *writer, const char *key);
 void cfg_writef(struct cfg_writer_t *writer, const char *key, const char *format, ...);
+void cfg_writefv(struct cfg_writer_t *writer, const char *key, const char *format, va_list args);
 void cfg_write_str(struct cfg_writer_t *writer, const char *key, const char *str);
 void cfg_write_ver2(struct cfg_writer_t *writer, const char *key, unsigned int maj, unsigned int min);
 

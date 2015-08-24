@@ -2,13 +2,55 @@
 #include "dir.h"
 #include "../io/chunk.h"
 #include "../io/print.h"
+#include "../try.h"
 
 
 /*
  * local function declarations
  */
 
+static void cwd_proc(struct io_output_t output, void *arg);
+
 static void userdir_proc(struct io_output_t output, void *arg);
+
+
+/**
+ * Retrieve the current working directory.
+ *   &returns: The directory as a chunk.
+ */
+
+_export
+struct io_chunk_t _cwd(void)
+{
+	return (struct io_chunk_t){ cwd_proc, NULL };
+}
+
+/**
+ * Process the current working directory.
+ *   @output: The output.
+ *   @arg: Unused argument.
+ */
+
+static void cwd_proc(struct io_output_t output, void *arg)
+{
+	char *dir;
+
+	dir = getcwd(NULL, 0);
+	io_print_str(output, dir);
+	free(dir);
+}
+
+/**
+ * Change the current working directory.
+ *   @dir: The new directory.
+ */
+
+_export
+void _chdir(const char *dir)
+{
+	if(chdir(dir) < 0)
+		throw("Failed to change working directory. %s.", strerror(errno));
+}
 
 
 /**

@@ -34,6 +34,9 @@ void *mem_realloc(void *ptr, size_t nbytes)
 {
 	struct _res_mem_t *mem;
 
+	if(ptr == NULL)
+		return mem_alloc(nbytes);
+
 	mem = ptr -= sizeof(struct _res_mem_t);
 
 	_res_remove(mem);
@@ -109,6 +112,25 @@ void _mem_release(struct _res_mem_t *mem)
 
 
 /**
+ * Copy and allocate memory.
+ *   @ptr: The original pointer.
+ *   @nbytes: The number of bytes to copy.
+ *   &returns: The copied memory.
+ */
+
+_export
+void *mem_dup(void *ptr, size_t nbytes)
+{
+	void *copy;
+
+	copy = mem_alloc(nbytes);
+	mem_copy(copy, ptr, nbytes);
+
+	return copy;
+}
+
+
+/**
  * Copy non-overlapping data.
  *   @dest: The destination.
  *   @src: The source.
@@ -144,4 +166,23 @@ _export
 void mem_zero(void *dest, size_t nbytes)
 {
 	memset(dest, 0x00, nbytes);
+}
+
+/**
+ * Swap two pieces of memory.
+ *   @left: The left meomry.
+ *   @right: The right memory.
+ *   @nbytes: The number of bytes.
+ */
+
+_export
+void mem_swap(void *left, void *right, size_t nbytes)
+{
+	uint8_t t, *lptr = left, *rptr = right;
+
+	while(nbytes-- > 0) {
+		t = *lptr;
+		*lptr++ = *rptr;
+		*rptr++ = t;
+	}
 }

@@ -2,6 +2,7 @@
 #include "avltree.h"
 #include "../mem.h"
 #include "../try.h"
+#include "func.h"
 
 
 /*
@@ -424,6 +425,22 @@ void avltree_destroy(struct avltree_t *tree)
 
 
 /**
+ * Lookup a key in the AVL tree.
+ *   @tree: The tree.
+ *   @key: The key.
+ *   &returns: The reference if found, null otherwise.
+ */
+
+_export
+void *avltree_lookup(struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_root_lookup(&tree->root, key);
+	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+}
+
+/**
  * Insert a key-value pair into the tree.
  *   @tree: The tree.
  *   @key: The key.
@@ -611,4 +628,24 @@ static void inst_delete(struct avltree_inst_t *inst)
 {
 	inst->delete(inst->ref);
 	mem_free(inst);
+}
+
+
+/**
+ * Create an AVL tree from a constant string list.
+ *   @list: The list.
+ *   &returns: The tree.
+ */
+
+_export
+struct avltree_t avltree_strlist(const char *const *list)
+{
+	struct avltree_t tree;
+
+	tree = avltree_init(compare_str, delete_noop);
+
+	for(; *list != NULL; list++)
+		avltree_insert(&tree, *list, (void *)*list);
+
+	return tree;
 }
