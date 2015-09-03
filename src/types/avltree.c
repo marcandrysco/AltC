@@ -154,6 +154,64 @@ struct avltree_node_t *avltree_root_lookup(struct avltree_root_t *root, const vo
 	return NULL;
 }
 
+/**
+ * Look up an AVL tree node from the root of at least a given value.
+ *   @root: The root.
+ *   @key: The sought reference.
+ *   &returns: The node if found, null otherwise.
+ */
+
+_export
+struct avltree_node_t *avltree_root_atleast(struct avltree_root_t *root, const void *ref)
+{
+	int cmp = 0;
+	struct avltree_node_t *node = root->node, *prev = NULL;
+
+	while(node != NULL) {
+		prev = node;
+
+		cmp = root->compare(ref, node->ref);
+		if(cmp == 0)
+			return node;
+		else
+			node = node->child[CMP2NODE(cmp)];
+	}
+
+	if(cmp > 0)
+		return avltree_node_next(prev);
+	else
+		return prev;
+}
+
+/**
+ * Look up an AVL tree node from the root of at most a given value.
+ *   @root: The root.
+ *   @key: The sought reference.
+ *   &returns: The node if found, null otherwise.
+ */
+
+_export
+struct avltree_node_t *avltree_root_atmost(struct avltree_root_t *root, const void *ref)
+{
+	int cmp = 0;
+	struct avltree_node_t *node = root->node, *prev = NULL;
+
+	while(node != NULL) {
+		prev = node;
+
+		cmp = root->compare(ref, node->ref);
+		if(cmp == 0)
+			return node;
+		else
+			node = node->child[CMP2NODE(cmp)];
+	}
+
+	if(cmp < 0)
+		return avltree_node_prev(prev);
+	else
+		return prev;
+}
+
 
 /**
  * Insert an AVL tree node to the root.

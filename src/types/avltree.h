@@ -19,6 +19,8 @@ struct avltree_node_t *avltree_root_first(struct avltree_root_t *root);
 struct avltree_node_t *avltree_root_last(struct avltree_root_t *root);
 
 struct avltree_node_t *avltree_root_lookup(struct avltree_root_t *root, const void *ref);
+struct avltree_node_t *avltree_root_atleast(struct avltree_root_t *root, const void *ref);
+struct avltree_node_t *avltree_root_atmost(struct avltree_root_t *root, const void *ref);
 
 void avltree_root_insert(struct avltree_root_t *root, struct avltree_node_t *node);
 struct avltree_node_t *avltree_root_remove(struct avltree_root_t *root, const void *ref);
