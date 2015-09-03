@@ -8,11 +8,15 @@
 struct io_chunk_t io_chunk_str(const char *str);
 struct io_chunk_t io_chunk_space(intptr_t cnt);
 struct io_chunk_t io_chunk_tab(intptr_t cnt);
+struct io_chunk_t io_chunk_quote(const struct io_chunk_t *chunk);
 
 size_t io_chunk_proc_len(struct io_chunk_t chunk);
 void io_chunk_proc_str(struct io_chunk_t chunk, char *restrict str);
 char *io_chunk_proc_strdup(struct io_chunk_t chunk);
 
+
+#define io_chunk_quoteval(chunk) io_chunk_quote(mem_getref(struct io_chunk_t, chunk))
+#define io_chunk_quotestr(str) io_chunk_quoteval(io_chunk_str(str))
 
 /**
  * Process a chunk.

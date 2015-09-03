@@ -138,7 +138,7 @@ struct avltree_node_t *avltree_root_last(struct avltree_root_t *root)
  */
 
 _export
-struct avltree_node_t *avltree_root_lookup(struct avltree_root_t *root, const void *ref)
+struct avltree_node_t *avltree_root_lookup(const struct avltree_root_t *root, const void *ref)
 {
 	int cmp;
 	struct avltree_node_t *node = root->node;

@@ -19,6 +19,19 @@ char *io_input_line(struct io_input_t input);
 
 
 /**
+ * Control an input.
+ *   @input: The input.
+ *   @id: The control identifier.
+ *   @data: The control data.
+ *   &returns: True if the signal is handle, false otherwise.
+ */
+
+static inline bool io_input_ctrl(struct io_input_t input, unsigned int cmd, void *data)
+{
+	return input.iface->device.ctrl(input.ref, cmd, data);
+}
+
+/**
  * Close an input.
  *   @outptut: The input.
  */
@@ -70,6 +83,22 @@ static inline int16_t io_input_byte(struct io_input_t input)
 
 	read = io_input_read(input, &byte, sizeof(uint8_t));
 	return read ? byte : -1;
+}
+
+
+/**
+ * Retrieve the cursor for an input.
+ *   @input: The input.
+ *   &returns: The cursor.
+ */
+
+static inline struct io_cursor_t io_input_cursor_get(struct io_input_t input)
+{
+	struct io_cursor_t cur = { 0, 0 };
+
+	io_input_ctrl(input, io_cursor_get_e, &cur);
+
+	return cur;
 }
 
 #endif
