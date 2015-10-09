@@ -437,7 +437,7 @@ void *avltree_lookup(struct avltree_t *tree, const void *key)
 	struct avltree_node_t *node;
 
 	node = avltree_root_lookup(&tree->root, key);
-	return node ? getcontainer(node, struct avltree_inst_t, node) : NULL;
+	return node ? getcontainer(node, struct avltree_inst_t, node)->ref : NULL;
 }
 
 /**
