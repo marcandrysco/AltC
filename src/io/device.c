@@ -7,6 +7,7 @@
  *   @ref: The reference.
  */
 
+_export
 void io_null_close(void *ref)
 {
 }
@@ -19,6 +20,7 @@ void io_null_close(void *ref)
  *   &returns: Always false.
  */
 
+_export
 bool io_null_ctrl(void *ref, unsigned int cmd, void *data)
 {
 	return false;
