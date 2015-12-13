@@ -41,6 +41,12 @@ void _specific_free(_specific_t specific);
 void *_specific_get(_specific_t specific);
 void _specific_set(_specific_t specific, void *ptr);
 
+/*
+ * task function declarations
+ */
+
+struct _task_t _task_init(void *(*func)(void *), void *arg);
+void *_task_destroy(struct _task_t *task);
 
 /*
  * initializer definitions

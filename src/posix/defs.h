@@ -69,4 +69,17 @@ enum _poll_e {
 	_poll_out_e = 0x02
 };
 
+
+/**
+ * Task structure.
+ *   @thread: The thread.
+ *   @fd, pipe: The synchronization file descriptor and pipe.
+ */
+
+struct _task_t {
+	_thread_t thread;
+
+	int fd, pipe[2];
+};
+
 #endif

@@ -3,6 +3,25 @@
 #include "../try.h"
 
 /**
+ * Task information structure.
+ *   @func: The function.
+ *   @arg: The argument.
+ */
+
+struct info_t {
+	int fd;
+	void *(*func)(void *);
+	void *arg;
+};
+
+
+/*
+ * local function declarations
+ */
+
+static void *task_proc(void *arg);
+
+/**
  * Execute a function only once.
  *   @once: The control.
  *   @func: The function.
@@ -277,4 +296,70 @@ void _specific_set(_specific_t specific, void *ptr)
 {
 	if(pthread_setspecific(specific, ptr) != 0)
 		fprintf(stderr, "Failed to set thread-specific variable. %s.\n", strerror(errno)), abort();
+}
+
+
+/**
+ * Initialize the task.
+ *   @func: The function.
+ *   @arg: The argument.
+ *   &returns: The task.
+ */
+
+_export
+struct _task_t _task_init(void *(*func)(void *), void *arg)
+{
+	struct info_t *info;
+	struct _task_t task;
+
+	if(pipe(task.pipe) < 0)
+		fatal("Failed to create pipe. %s.", strerror(errno));
+
+	info = malloc(sizeof(struct info_t));
+	*info = (struct info_t){ task.pipe[0], func, arg };
+
+	task.fd = task.pipe[0];
+	task.thread = _thread_new(task_proc, info);
+
+	return task;
+}
+
+/**
+ * Destroy a task, requesting termination of task thread.
+ *   @task: The task.
+ *   &returns: The joined value.
+ */
+
+_export
+void *_task_destroy(struct _task_t *task)
+{
+	int err;
+	void *ret;
+	uint8_t one = 1;
+
+	err = write(task->pipe[1], &one, 1);
+	if(err <= 0)
+		fatal("Failed to synchronize task. %s.", err ? strerror(errno) : "Failed to write");
+
+	ret = _thread_join(task->thread);
+	close(task->pipe[0]);
+	close(task->pipe[1]);
+
+	return ret;
+}
+
+/**
+ * Task processing function.
+ *   @arg: The information argument.
+ *   &returns: The task return.
+ */
+
+static void *task_proc(void *arg)
+{
+	struct info_t info;
+
+	info = *(struct info_t *)arg;
+	free(arg);
+
+	return info.func(info.arg);
 }
