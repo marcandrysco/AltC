@@ -2,6 +2,11 @@
 #define STRING_H
 
 /*
+ * character function declarations
+ */
+
+
+/*
  * string function declarations
  */
 
@@ -13,10 +18,18 @@ bool str_isequal(const char *left, const char *right);
 int str_cmp(const char *left, const char *right);
 bool str_chk(const char *left, const char *right);
 
+char *str_prefixi(const char *left, const char *right);
+
+char *str_prequel(const char *left, const char *right, unsigned int min);
+char *str_prequeli(const char *left, const char *right, unsigned int min);
+
 bool str_isspace(char ch);
 bool str_isdigit(char ch);
 bool str_isalpha(char ch);
 bool str_isalnum(char ch);
+
+void str_tolower(char *str);
+void str_toupper(char *str);
 
 size_t str_ltrim(const char *str);
 char *str_ltrimp(const char *str);
@@ -53,13 +66,18 @@ struct io_output_t str_output(char **str);
  * parse function declarations
  */
 
+int str_parse_int(const char *str);
 unsigned int str_parse_uint(const char *str);
 double str_parse_double(const char *str);
+double str_parse_double_si(const char *str);
 bool str_parse_bool(const char *str);
 void str_parsef(const char *restrict str, const char *restrict format, ...);
 
 unsigned int str_scan_uint(const char *str, char **endptr);
+double str_scan_double(const char *str, char **endptr);
 
+unsigned int str_read_uint(const char *str, char **endptr);
+double str_read_double(const char *str, char **endptr);
 
 /**
  * Retrieve the last character of a string.
@@ -72,6 +90,29 @@ static inline char str_tail(const char *str)
 
 	len = str_len(str);
 	return len ? str[len - 1] : '\0';
+}
+
+
+/**
+ * Convert a character to lowercase.
+ *   @ch: The character.
+ *   &returns: The lowercase character.
+ */
+
+static inline char ch_tolower(char ch)
+{
+	return ((ch >= 'A') && (ch <= 'Z')) ? (ch - 'A' + 'a') : ch;
+}
+
+/**
+ * Convert a character to uppercase.
+ *   @ch: The character.
+ *   &returns: The uppercase character.
+ */
+
+static inline char ch_toupper(char ch)
+{
+	return ((ch >= 'a') && (ch <= 'z')) ? (ch - 'a' + 'A') : ch;
 }
 
 #endif

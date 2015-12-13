@@ -11,5 +11,5 @@
 
 void _backtrace(void **buf, unsigned int n)
 {
-	backtrace(buf, n);
+	backtrace(buf, n-1);
 }

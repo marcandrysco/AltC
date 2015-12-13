@@ -72,6 +72,25 @@ char *str_rchr(const char *str, char ch)
 	return strrchr(str, ch);
 }
 
+/**
+ * String break on whitespace.
+ *   @str: The string.
+ *   &returns: The first whitespace character or null.
+ */
+
+_export
+char *str_wbrk(const char *str)
+{
+	while(!str_isspace(*str)) {
+		if(*str == '\0')
+			return NULL;
+
+		str++;
+	}
+
+	return (char *)str;
+}
+
 
 /**
  * Check if two strings are equal.
@@ -115,6 +134,68 @@ bool str_chk(const char *left, const char *right)
 		return false;
 	return
 		str_isequal(left, right);
+}
+
+
+/**
+ * Check if the left string matches the right as a prefix.
+ *   @left: The left.
+ *   @right: The right.
+ *   &returns: The end of the left prefix.
+ */
+
+_export
+char *str_prefixi(const char *left, const char *right)
+{
+	while(true) {
+		if(ch_tolower(*right) == '\0')
+			return (char *)left;
+
+		if(ch_tolower(*left) != ch_tolower(*right))
+			return NULL;
+
+		left++;
+		right++;
+	}
+}
+
+
+/**
+ * Match a string against its prequel.
+ *   @left: The left string.
+ *   @right: The right string.
+ *   @min: The minimum match length.
+ *   &returns: The pointer into the left string if matchec, null otherwise.
+ */
+
+_export
+char *str_prequel(const char *left, const char *right, unsigned int min)
+{
+	unsigned int i = 0;
+
+	while((left[i] != '\0') && (left[i] == right[i]))
+		i++;
+
+	return (i >= min) ? (char *)(left + i) : NULL;
+}
+
+/**
+ * Match a string against its case insensitive prequel.
+ *   @left: The left string.
+ *   @right: The right string.
+ *   @min: The minimum match length.
+ *   &returns: The pointer into the left string if matchec, null otherwise.
+ */
+
+_export
+char *str_prequeli(const char *left, const char *right, unsigned int min)
+{
+	size_t i = 0;
+
+	while((left[i] != '\0') && (ch_tolower(left[i]) == ch_tolower(right[i])))
+		i++;
+
+	return (i >= min) ? (char *)(left + i) : NULL;
 }
 
 
@@ -164,6 +245,31 @@ _export
 bool str_isalnum(char ch)
 {
 	return isalnum(ch);
+}
+
+
+/**
+ * Convert a string to lowercase.
+ *   @str: The string.
+ */
+
+_export
+void str_tolower(char *str)
+{
+	while(*str != '\0')
+		*str = ch_tolower(*str);
+}
+
+/**
+ * Convert a string to uppercase.
+ *   @str: The string.
+ */
+
+_export
+void str_toupper(char *str)
+{
+	while(*str != '\0')
+		*str = ch_toupper(*str);
 }
 
 
@@ -648,6 +754,31 @@ static size_t output_write(struct output_t *output, void *restrict buf, size_t n
 
 
 /**
+ * Parse a signed integer from a string.
+ *   @str: The string.
+ *   &returns: The unsigned integer.
+ */
+
+_export
+int str_parse_int(const char *str)
+{
+	int neg;
+	int16_t byte = -1;
+	unsigned int val;
+
+	if(*str == '-')
+		str++, neg = -1;
+	else
+		neg = 1;
+
+	val = io_parse_uint(str_inputptr(&str), &byte);
+	if(byte >= 0)
+		throw("Extra text after number.");
+
+	return neg * val;
+}
+
+/**
  * Parse an unsigned integer from a string.
  *   @str: The string.
  *   &returns: The unsigned integer.
@@ -686,6 +817,52 @@ double str_parse_double(const char *str)
 }
 
 /**
+ * Parse a double with SI units from a string.
+ *   @str: The string.
+ *   &returns: The double.
+ */
+
+_export
+double str_parse_double_si(const char *str)
+{
+	int16_t byte = -1;
+	double val;
+
+	val = io_parse_double(str_inputptr(&str), &byte);
+
+	if(byte >= 0)
+		str--;
+
+	while(str_isspace(*str))
+		str++;
+
+	switch(*str) {
+	case 'G':
+	case 'g':
+		val *= 1000.0;
+	case 'M':
+		val *= 1000.0;
+	case 'k':
+	case 'K':
+		val *= 1000.0;
+		str++;
+		break;
+
+	case 'u':
+		val /= 1000.0;
+	case 'm':
+		val /= 1000.0;
+		str++;
+		break;
+	}
+
+	if(*str != '\0')
+		throw("Extra text after number.");
+
+	return val;
+}
+
+/**
  * Parse a boolean from a string.
  *   @str: The string.
  *   &returns: The boolean.
@@ -717,16 +894,103 @@ void str_parsef(const char *restrict str, const char *restrict format, ...)
 }
 
 
+/**
+ * Scan an unsigned integer from a string.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The scanned integer.
+ */
+
 _export
 unsigned int str_scan_uint(const char *str, char **endptr)
 {
 	unsigned int num;
 	int16_t byte = -1;
 
-	num = io_parse_uint(str_inputptr(&str), &byte);
+	str = str_ltrimp(str);
+	num = (*str != '\0') ? io_parse_uint(str_inputptr(&str), &byte) : 0;
+	str = (byte < 0) ? str : (str - 1);
 
 	if(endptr != NULL)
-		*endptr = (char *)((byte < 0) ? str : (str - 1));
+		*endptr = (char *)str;
+	else if(str_ltrimp(str) != '\0')
+		throw("Unexpected data at end of string.");
 
 	return num;
+}
+
+/**
+ * Scan a double from a string.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The scanned integer.
+ */
+
+_export
+double str_scan_double(const char *str, char **endptr)
+{
+	double flt;
+	int16_t byte = -1;
+
+	str = str_ltrimp(str);
+	flt = (*str != '\0') ? io_parse_double(str_inputptr(&str), &byte) : 0;
+	str = (byte < 0) ? str : (str - 1);
+
+	if(endptr != NULL)
+		*endptr = (char *)str;
+	else if(str_ltrimp(str) != '\0')
+		throw("Unexpected data at end of string.");
+
+	return flt;
+}
+
+
+/**
+ * Read an unsigned integer from a string.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The read integer.
+ */
+
+_export
+unsigned int str_read_uint(const char *str, char **endptr)
+{
+	unsigned int num;
+	int16_t byte = -1;
+
+	str = str_ltrimp(str);
+	num = io_parse_uint(str_inputptr(&str), &byte);
+	str = (byte < 0) ? str : (str - 1);
+
+	if(endptr != NULL)
+		*endptr = (char *)str;
+	else if(str_ltrimp(str) != '\0')
+		throw("Unexpected data at end of string.");
+
+	return num;
+}
+
+/**
+ * Read a double from a string.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The read integer.
+ */
+
+_export
+double str_read_double(const char *str, char **endptr)
+{
+	double flt;
+	int16_t byte = -1;
+
+	str = str_ltrimp(str);
+	flt = io_parse_double(str_inputptr(&str), &byte);
+	str = (byte < 0) ? str : (str - 1);
+
+	if(endptr != NULL)
+		*endptr = (char *)str;
+	else if(str_ltrimp(str) != '\0')
+		throw("Unexpected data at end of string.");
+
+	return flt;
 }

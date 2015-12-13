@@ -44,6 +44,24 @@ int compare_char(const void *left, const void *right)
 }
 
 /**
+ * Compare integers.
+ *   @left: The left integer pointer.
+ *   @right: The right integer pointer.
+ *   &returns: Their order.
+ */
+
+_export
+int compare_int(const void *left, const void *right)
+{
+	if(*(int *)left > *(int *)right)
+		return 1;
+	else if(*(int *)left < *(int *)right)
+		return -1;
+	else
+		return 0;
+}
+
+/**
  * Compare unsigned integers.
  *   @left: The left unsigned integer pointer.
  *   @right: The right unsigned integer pointer.
