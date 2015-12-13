@@ -123,9 +123,15 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 				else
 					mod.zero = false;
 
-				mod.width = 0;
-				while(str_isdigit(*format))
-					mod.width = mod.width * 10 + *format - '0', format++;
+				if(*format == '!') {
+					mod.width = va_arg(args->args, unsigned int);
+					format++;
+				}
+				else {
+					mod.width = 0;
+					while(str_isdigit(*format))
+						mod.width = mod.width * 10 + *format - '0', format++;
+				}
 
 				mod.frac = 0;
 				if(*format == '.') {

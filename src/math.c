@@ -42,7 +42,7 @@ struct m_rand_t *m_rand_def(void)
 _export
 struct m_rand_t m_rand_init(uint32_t seed)
 {
-	return (struct m_rand_t){ 123456789, 362436069, 521288629, seed };
+	return (struct m_rand_t){ 123456789, 362436069, 521288629, seed * 1049141 };
 }
 
 /**
@@ -78,6 +78,32 @@ _export
 double m_rand_nextd(struct m_rand_t *rand)
 {
 	return m_rand_next(rand) / (double)UINT32_MAX;
+}
+
+_export
+double m_rand_d(struct m_rand_t *rand)
+{
+	return m_rand_next(rand) / (double)UINT32_MAX;
+}
+
+_export
+double m_rand_double(struct m_rand_t *rand)
+{
+	return m_rand_next(rand) / (double)UINT32_MAX;
+}
+
+/**
+ * Retrieve a random number in an inclusive range.
+ *   @rand: The number generator.
+ *   @low: The low number.
+ *   @high: The high number.
+ *   &returns: The next number.
+ */
+
+_export
+double m_rand_range(struct m_rand_t *rand, double low, double high)
+{
+	return low + m_rand_double(rand) * (high - low);
 }
 
 /**
