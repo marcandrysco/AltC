@@ -71,17 +71,21 @@ void cfg_write_ver2(struct cfg_writer_t *writer, const char *key, unsigned int m
 
 struct cfg_reader_t cfg_reader_init(struct io_input_t input);
 struct cfg_reader_t cfg_reader_open(const char *path);
+struct cfg_reader_t *cfg_reader_new(const char *path);
 void cfg_reader_destroy(struct cfg_reader_t *reader);
 void cfg_reader_close(struct cfg_reader_t *reader);
+void cfg_reader_delete(struct cfg_reader_t *reader);
 
 const char *cfg_reader_peak(struct cfg_reader_t *reader);
 struct cfg_line_t *cfg_reader_check(struct cfg_reader_t *reader, const char *key);
 struct cfg_line_t *cfg_reader_get(struct cfg_reader_t *reader, const char *key);
 
 void cfg_check(struct cfg_reader_t *reader, const char *key);
+void cfg_checkf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...);
 
 bool cfg_read(struct cfg_reader_t *reader, const char *restrict key);
 bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...);
+bool cfg_readfv(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, va_list args);
 struct cfg_line_t *cfg_read_line(struct cfg_reader_t *reader);
 void cfg_read_ver2(struct cfg_reader_t *reader, const char *key, unsigned int *maj, unsigned int *min);
 char *cfg_read_str(struct cfg_reader_t *reader, const char *key);

@@ -19,6 +19,28 @@ void io_output_full(struct io_output_t output, const void *restrict buf, size_t 
 
 
 /**
+ * Write a 32-bit integer to the outupt.
+ *   @output: The output.
+ *   @val: The value.
+ */
+
+static inline void io_output_int32(struct io_output_t output, int32_t val)
+{
+	io_output_full(output, &val, sizeof(int32_t));
+}
+
+/**
+ * Write an unsigned 32-bit integer to the outupt.
+ *   @output: The output.
+ *   @val: The value.
+ */
+
+static inline void io_output_uint32(struct io_output_t output, uint32_t val)
+{
+	io_output_full(output, &val, sizeof(uint32_t));
+}
+
+/**
  * Control an output.
  *   @output: The output.
  *   @id: The control identifier.

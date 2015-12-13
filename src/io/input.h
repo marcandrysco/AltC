@@ -19,6 +19,37 @@ char *io_input_line(struct io_input_t input);
 
 
 /**
+ * Input a 32-bit integer.
+ *   @input: The input.
+ *   &returns: The value
+ */
+
+static inline int32_t io_input_int32(struct io_input_t input)
+{
+	int32_t val;
+
+	io_input_full(input, &val, sizeof(int32_t));
+
+	return val;
+}
+
+/**
+ * Input an unsigned 32-bit integer.
+ *   @input: The input.
+ *   &returns: The value.
+ */
+
+static inline uint32_t io_input_uint32(struct io_input_t input)
+{
+	uint32_t val;
+
+	io_input_full(input, &val, sizeof(uint32_t));
+
+	return val;
+}
+
+
+/**
  * Control an input.
  *   @input: The input.
  *   @id: The control identifier.

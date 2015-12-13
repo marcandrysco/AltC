@@ -189,16 +189,37 @@ void cfg_writefv(struct cfg_writer_t *writer, const char *key, const char *forma
 	io_printf(writer->output, "%C%s", io_chunk_tab(writer->tab), key);
 
 	while(*format != '\0') {
-		io_printf(writer->output, "%c", space);
-		space = ' ';
+		if(str_isdigit(*format)) {
+			unsigned int len;
 
-		switch(*format++) {
-		case 'u': io_printf(writer->output, "\"%u\"", va_arg(args, unsigned int)); break;
-		case 's': io_printf(writer->output, "\"%s\"", va_arg(args, const char *)); break;
-		case 'b': io_printf(writer->output, "\"%s\"", va_arg(args, int) ? "true" : "false"); break;
-		case 'f': io_printf(writer->output, "\"%g\"", va_arg(args, double)); break;
-		case 'C': io_printf(writer->output, "\"%C\"", va_arg(args, struct io_chunk_t)); break;
-		default: throw("Invalid format character '%c'.", format[-1]);
+			len = str_scan_uint(format, (char **)&format);
+
+			switch(*format++) {
+			case 'f':
+				{
+					double *flt = va_arg(args, double *);
+
+					while(len-- > 0)
+						io_printf(writer->output, "%c\"%g\"", space, *flt++), space = ' ';
+				}
+
+				break;
+
+			default: throw("Invalid format character '%c'.", format[-1]);
+			}
+		}
+		else {
+			io_printf(writer->output, "%c", space), space = ' ';
+
+			switch(*format++) {
+			case 'd': io_printf(writer->output, "\"%u\"", va_arg(args, int)); break;
+			case 'u': io_printf(writer->output, "\"%u\"", va_arg(args, unsigned int)); break;
+			case 's': io_printf(writer->output, "\"%s\"", va_arg(args, const char *)); break;
+			case 'b': io_printf(writer->output, "\"%s\"", va_arg(args, int) ? "true" : "false"); break;
+			case 'f': io_printf(writer->output, "\"%g\"", va_arg(args, double)); break;
+			case 'C': io_printf(writer->output, "\"%C\"", va_arg(args, struct io_chunk_t)); break;
+			default: throw("Invalid format character '%c'.", format[-1]);
+			}
 		}
 	}
 
@@ -267,6 +288,23 @@ struct cfg_reader_t cfg_reader_open(const char *path)
 }
 
 /**
+ * Open and allocate a configuration reader. 
+ *   @path: The path.
+ *   &returns: The reader.
+ */
+
+_export
+struct cfg_reader_t *cfg_reader_new(const char *path)
+{
+	struct cfg_reader_t *reader;
+
+	reader = mem_alloc(sizeof(struct cfg_reader_t));
+	*reader = cfg_reader_open(path);
+
+	return reader;
+}
+
+/**
  * Destroy a configuration reader.
  *   @reader: The reader.
  */
@@ -288,6 +326,18 @@ void cfg_reader_close(struct cfg_reader_t *reader)
 {
 	cfg_reader_destroy(reader);
 	io_input_close(reader->input);
+}
+
+/**
+ * Delete a reader.
+ *   @reader: The reader.
+ */
+
+_export
+void cfg_reader_delete(struct cfg_reader_t *reader)
+{
+	cfg_reader_close(reader);
+	mem_free(reader);
 }
 
 
@@ -352,6 +402,28 @@ void cfg_check(struct cfg_reader_t *reader, const char *key)
 		throw("Missing directive '%s'; line %u.", key, (unsigned int)reader->line);
 }
 
+/**
+ * Check if a formatted line exists, throwing an error if it does not.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ *   &returns: True if line read, false otherwise.
+ */
+
+_export
+void cfg_checkf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+
+	if(!cfg_readfv(reader, key, format, args))
+		throw("Missing directive '%s'; line %u.", key, (unsigned int)reader->line);
+
+	va_end(args);
+}
+
 
 /**
  * Read a blank line from the reader.
@@ -386,7 +458,28 @@ bool cfg_read(struct cfg_reader_t *reader, const char *restrict key)
 _export
 bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, ...)
 {
+	bool retval;
 	va_list args;
+
+	va_start(args, format);
+	retval = cfg_readfv(reader, key, format, args);
+	va_end(args);
+
+	return retval;
+}
+
+/**
+ * Read a formatted line from the reader.
+ *   @reader: The reader.
+ *   @key: The key.
+ *   @format: The format string.
+ *   @...: The arguments.
+ *   &returns: True if line read, false otherwise.
+ */
+
+_export
+bool cfg_readfv(struct cfg_reader_t *reader, const char *restrict key, const char *restrict format, va_list args)
+{
 	struct cfg_line_t *line;
 	unsigned int i = 0;
 
@@ -394,19 +487,40 @@ bool cfg_readf(struct cfg_reader_t *reader, const char *restrict key, const char
 	if(line == NULL)
 		return false;
 
-	va_start(args, format);
-
 	while(*format != '\0') {
-		switch(*format++) {
-		case 's': *va_arg(args, char **) = str_dup(line->value[i++]); break;
-		case 'u': *va_arg(args, unsigned int *) = str_parse_uint(line->value[i++]); break;
-		case 'f': *va_arg(args, double *) = str_parse_double(line->value[i++]); break;
-		case 'b': *va_arg(args, bool *) = str_parse_bool(line->value[i++]); break;
-		default: throw("Invalid format character '%c'.", format[-1]);
+		if(str_isdigit(*format)) {
+			unsigned int len;
+
+			len = str_scan_uint(format, (char **)&format);
+
+			switch(*format++) {
+			case 'f':
+				{
+					double *flt = va_arg(args, double *);
+
+					while(len-- > 0)
+						*flt++ = str_parse_double(line->value[i++]);
+				}
+
+				break;
+
+			default: throw("Invalid format character '%c'.", format[-1]);
+			}
+		}
+		else {
+			if(line->value[i] == NULL)
+				throw("Missing paramter.");
+
+			switch(*format++) {
+			case 's': *va_arg(args, char **) = str_dup(line->value[i++]); break;
+			case 'd': *va_arg(args, int *) = str_parse_int(line->value[i++]); break;
+			case 'u': *va_arg(args, unsigned int *) = str_parse_uint(line->value[i++]); break;
+			case 'f': *va_arg(args, double *) = str_parse_double(line->value[i++]); break;
+			case 'b': *va_arg(args, bool *) = str_parse_bool(line->value[i++]); break;
+			default: throw("Invalid format character '%c'.", format[-1]);
+			}
 		}
 	}
-
-	va_end(args);
 
 	cfg_line_delete(line);
 
