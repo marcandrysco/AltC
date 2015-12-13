@@ -5,6 +5,9 @@
  * memory function declarations
  */
 
+void *_alloc(size_t nbytes);
+void _free(void *ptr);
+
 void *mem_alloc(size_t size);
 void *mem_realloc(void *ptr, size_t nbytes);
 void _mem_set(void **dest, void *src);

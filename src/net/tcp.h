@@ -2,6 +2,12 @@
 #define NET_TCP_H
 
 /*
+ * structure prototypes
+ */
+
+struct tcp_client_t;
+
+/*
  * tcp client function declarations
  */
 

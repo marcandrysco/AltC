@@ -4,6 +4,18 @@
 #include "mem.h"
 
 
+_export
+void *_alloc(size_t nbytes)
+{
+	return malloc(nbytes);
+}
+
+_export
+void _free(void *ptr)
+{
+	free(ptr);
+}
+
 /**
  * Allocate memory.
  *   @nbytes: The number of bytes.
