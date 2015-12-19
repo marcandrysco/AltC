@@ -511,6 +511,22 @@ void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
 	avltree_root_insert(&tree->root, &inst_new(key, ref, tree->delete)->node);
 }
 
+/**
+ * Remove a key-value from the tree.
+ *   @tree: The tree.
+ *   @key: The key.
+ *   &returns: The value if found, null otherwise.
+ */
+
+_export
+void *avltree_remove(struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_root_remove(&tree->root, key);
+	return node ? getcontainer(node, struct avltree_inst_t, node)->ref : NULL;
+}
+
 
 /**
  * Retrieve the first instance from the AVL tree.
