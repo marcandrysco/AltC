@@ -18,6 +18,7 @@ bool str_isequal(const char *left, const char *right);
 int str_cmp(const char *left, const char *right);
 bool str_chk(const char *left, const char *right);
 
+char *str_prefix(const char *left, const char *right);
 char *str_prefixi(const char *left, const char *right);
 
 char *str_prequel(const char *left, const char *right, unsigned int min);

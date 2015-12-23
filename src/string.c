@@ -145,6 +145,28 @@ bool str_chk(const char *left, const char *right)
  */
 
 _export
+char *str_prefix(const char *left, const char *right)
+{
+	while(true) {
+		if(*right == '\0')
+			return (char *)left;
+
+		if(*left != *right)
+			return NULL;
+
+		left++;
+		right++;
+	}
+}
+
+/**
+ * Check if the left string matches the right as a prefix.
+ *   @left: The left.
+ *   @right: The right.
+ *   &returns: The end of the left prefix.
+ */
+
+_export
 char *str_prefixi(const char *left, const char *right)
 {
 	while(true) {
