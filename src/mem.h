@@ -22,6 +22,8 @@ void mem_move(void *dest, const void *src, size_t nbytes);
 void mem_zero(void *dest, size_t nbytes);
 void mem_swap(void *left, void *right, size_t nbytes);
 
+bool mem_isequal(const void *left, const void *right, size_t nbytes);
+
 /*
  * convenience macros
  */

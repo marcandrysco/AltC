@@ -198,3 +198,18 @@ void mem_swap(void *left, void *right, size_t nbytes)
 		*rptr++ = t;
 	}
 }
+
+
+/**
+ * Compare to memory buffers to see if they are equal.
+ *   @left: The left buffer.
+ *   @right: The right buffer.
+ *   @nbytes: The number of bytes to compare.
+ *   &returns: True if equal, false otherwise.
+ */
+
+_export
+bool mem_isequal(const void *left, const void *right, size_t nbytes)
+{
+	return memcmp(left, right, nbytes) == 0;
+}
